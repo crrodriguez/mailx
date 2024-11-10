@@ -58,7 +58,6 @@ static char sccsid[] = "@(#)smtp.c	2.43 (gritter) 8/4/07";
 #include <setjmp.h>
 
 #include "extern.h"
-#include "md5.h"
 
 /*
  * Mail -- a mail program

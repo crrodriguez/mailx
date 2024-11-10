@@ -67,7 +67,7 @@ static char sccsid[] = "@(#)junk.c	1.75 (gritter) 9/14/08";
 #endif	/* !MAP_FAILED */
 
 #include "extern.h"
-#include "md5.h"
+#include <openssl/md5.h>
 
 /*
  * Mail -- a mail program
@@ -1132,11 +1132,11 @@ dbhash(const char *word, unsigned long *h1, unsigned long *h2)
 	unsigned char	digest[16];
 	MD5_CTX	ctx;
 
-	MD5Init(&ctx);
-	MD5Update(&ctx, (unsigned char *)word, strlen(word));
+	MD5_Init(&ctx);
+	MD5_Update(&ctx, (unsigned char *)word, strlen(word));
 	if (table_version >= 1)
-		MD5Update(&ctx, (unsigned char *)&super[OF_super_mangle], 4);
-	MD5Final(digest, &ctx);
+		MD5_Update(&ctx, (unsigned char *)&super[OF_super_mangle], 4);
+	MD5_Final(digest, &ctx);
 	*h1 = getn(digest);
 	if (table_version < 1) {
 		*h1 ^= getn(&super[OF_super_mangle]);
@@ -1166,9 +1166,9 @@ mkmangle(void)
 
 	memset(&u, 0, sizeof u);
 	time(&u.t);
-	MD5Init(&ctx);
-	MD5Update(&ctx, (unsigned char *)u.c, sizeof u.c);
-	MD5Final(digest, &ctx);
+	MD5_Init(&ctx);
+	MD5_Update(&ctx, (unsigned char *)u.c, sizeof u.c);
+	MD5_Final(digest, &ctx);
 	s = getn(digest);
 	putn(&super[OF_super_mangle], s);
 }

@@ -51,7 +51,7 @@ static char sccsid[] = "@(#)pop3.c	2.43 (gritter) 3/4/06";
 #include <unistd.h>
 #include <time.h>
 
-#include "md5.h"
+#include <openssl/md5.h>
 
 /*
  * Mail -- a mail program
@@ -320,9 +320,9 @@ retry:	if (xuser == NULL) {
 			return STOP;
 	}
 	catp = savecat(ts, pass);
-	MD5Init(&ctx);
-	MD5Update(&ctx, (unsigned char *)catp, strlen(catp));
-	MD5Final(digest, &ctx);
+	MD5_Init(&ctx);
+	MD5_Update(&ctx, (unsigned char *)catp, strlen(catp));
+	MD5_Final(digest, &ctx);
 	xp = md5tohex(digest);
 	if (pop3_apop1(mp, user, xp) == STOP) {
 		pass = NULL;

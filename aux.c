@@ -63,7 +63,7 @@ static char sccsid[] = "@(#)aux.c	2.83 (gritter) 3/4/06";
 #include <dirent.h>
 #include <fcntl.h>
 #include <limits.h>
-
+#include <openssl/hmac.h>
 /*
  * Mail -- a mail program
  *
@@ -776,9 +776,7 @@ cram_md5_string(const char *user, const char *pass, const char *b64)
 	in.s = (char *)b64;
 	in.l = strlen(in.s);
 	mime_fromb64(&in, &out, 0);
-	hmac_md5((unsigned char *)out.s, out.l,
-			(unsigned char *)pass, strlen(pass),
-			digest);
+	HMAC(EVP_md5(), pass, strlen(pass), out.s, out.l, digest, NULL);
 	free(out.s);
 	xp = md5tohex(digest);
 	sp = ac_alloc(ss = strlen(user) + strlen(xp) + 2);

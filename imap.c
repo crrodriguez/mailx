@@ -58,8 +58,6 @@ static char sccsid[] = "@(#)imap.c	1.222 (gritter) 3/13/09";
 
 #ifdef	HAVE_SOCKETS
 
-#include "md5.h"
-
 #include <sys/socket.h>
 #include <netdb.h>
 #include <netinet/in.h>
