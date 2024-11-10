@@ -64,8 +64,6 @@ static char sccsid[] = "@(#)aux.c	2.83 (gritter) 3/4/06";
 #include <fcntl.h>
 #include <limits.h>
 
-#include "md5.h"
-
 /*
  * Mail -- a mail program
  *
@@ -888,25 +886,10 @@ getrandstring(size_t length)
 	int	i, fd = -1;
 	char	*data;
 	char	*cp, *rp;
-	MD5_CTX	ctx;
 
 	data = salloc(length);
-	if ((fd = open("/dev/urandom", O_RDONLY)) < 0 ||
-			read(fd, data, length) != length) {
-		if (pid == 0) {
-			pid = getpid();
-			srand(pid);
-			cp = nodename(0);
-			MD5Init(&ctx);
-			MD5Update(&ctx, (unsigned char *)cp, strlen(cp));
-			MD5Final(nodedigest, &ctx);
-		}
-		for (i = 0; i < length; i++)
-			data[i] = (int)(255 * (rand() / (RAND_MAX + 1.0))) ^
-				nodedigest[i % sizeof nodedigest];
-	}
-	if (fd > 0)
-		close(fd);
+	if(getentropy(data, length) != 0)
+		return NULL;
 	cp = memtob64(data, length);
 	rp = salloc(length+1);
 	strncpy(rp, cp, length)[length] = '\0';
