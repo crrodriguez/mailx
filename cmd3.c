@@ -44,6 +44,7 @@ static char sccsid[] = "@(#)cmd3.c	2.87 (gritter) 10/1/08";
 
 #include <math.h>
 #include <float.h>
+#include "config.h"
 #include "rcv.h"
 #include "extern.h"
 #include <unistd.h>

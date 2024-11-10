@@ -38,6 +38,7 @@ static char sccsid[] = "@(#)dotlock.c	2.9 (gritter) 3/20/06";
 #endif
 #endif
 
+#include "config.h"
 #include "rcv.h"
 #include <sys/stat.h>
 #include <unistd.h>

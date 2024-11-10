@@ -48,6 +48,7 @@ static char sccsid[] = "@(#)names.c	2.22 (gritter) 3/4/06";
  * Handle name lists.
  */
 
+#include "config.h"
 #include "rcv.h"
 #include "extern.h"
 #include <sys/stat.h>

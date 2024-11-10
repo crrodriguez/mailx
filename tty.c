@@ -48,6 +48,7 @@ static char sccsid[] = "@(#)tty.c	2.29 (gritter) 3/9/07";
  * Generally useful tty stuff.
  */
 
+#include "config.h"
 #include "rcv.h"
 #include "extern.h"
 #include <errno.h>

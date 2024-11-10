@@ -42,6 +42,7 @@ static char sccsid[] = "@(#)fio.c	2.76 (gritter) 9/16/09";
 #endif
 #endif /* not lint */
 
+#include "config.h"
 #include "rcv.h"
 
 #ifndef HAVE_WORDEXP

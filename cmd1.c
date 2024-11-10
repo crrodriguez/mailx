@@ -42,6 +42,7 @@ static char sccsid[] = "@(#)cmd1.c	2.97 (gritter) 6/16/07";
 #endif
 #endif /* not lint */
 
+#include "config.h"
 #include "rcv.h"
 #include "extern.h"
 #ifdef	HAVE_WCWIDTH

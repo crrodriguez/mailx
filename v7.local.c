@@ -50,6 +50,7 @@ static char sccsid[] = "@(#)v7.local.c	2.10 (gritter) 3/4/06";
  * Local routines that are installation dependent.
  */
 
+#include "config.h"
 #include "rcv.h"
 #include "extern.h"
 #include <sys/stat.h>

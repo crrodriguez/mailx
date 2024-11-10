@@ -180,7 +180,10 @@ The following ~ escapes are defined:\n\
 132 No applicable messages\n
 133 %d: Inappropriate message\n
 134 Unknown metachar (%c)\n
-135 Usage: %s -eiIUdFntBNHV~ -T FILE -u USER -h hops -r address -s SUBJECT -a FILE -q FILE -f FILE -b USERS -c USERS users\n
+135 $Usage: %s [-BDFintv~] [-s subject] [-a attachment ] [-c cc-addr] [-b bcc-addr]\n\
+             [-r from-addr] [-h hops] [-A account] [-R reply-addr] [-S option] to-addr ...\n\
+       %s [-BDeHiInNRv~] [-T name] [-A account] -f [name] [-S option]\n\
+       %s [-BDeinNRv~] [-A account] [-u user] [-S option]\n
 136 --- DELETED ---
 137 Cannot give -f and people to send to.\n
 138 Send options without primary recipient specified.\n
@@ -314,3 +317,5 @@ The following ~ escapes are defined:\n\
 266 Ignoring header field "%s"\n
 267 Restoring deleted header lines\n
 268 Pipe to: "%s"\n
+269 The -R option is meaningless in send mode.\n
+270 The reply-to is meaningless not in send mode.\n

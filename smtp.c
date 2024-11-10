@@ -42,6 +42,7 @@ static char sccsid[] = "@(#)smtp.c	2.43 (gritter) 8/4/07";
 #endif
 #endif /* not lint */
 
+#include "config.h"
 #include "rcv.h"
 
 #include <sys/utsname.h>

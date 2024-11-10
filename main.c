@@ -93,7 +93,7 @@ int
 main(int argc, char *argv[])
 {
 	const char optstr[] = "A:BHEFINVT:R::S:a:b:c:dDefh:inqr:s:tu:v~";
-	int i, existonly = 0, headersonly = 0, sendflag = 0;
+	int i, existonly = 0, headersonly = 0, sendflag = 0, err = 1;
 	struct name *to, *cc, *bcc, *replyto, *smopts;
 	struct attachment *attach;
 	char *subject, *cp, *ef, *qf = NULL, *fromaddr = NULL, *Aflag = NULL;
@@ -385,8 +385,11 @@ main(int argc, char *argv[])
 		case '?':
 usage:
 			fprintf(stderr, catgets(catd, CATSET, 135,
-"Usage: %s -eiIUdEFntBDNHV~ [-R [reply-address]] -T FILE -u USER -h hops -r address -s SUBJECT -a FILE -q FILE -f FILE -A ACCOUNT -b USERS -c USERS -S OPTION users\n"), progname);
-			exit(2);
+"Usage: %s [-BDFintv~] [-s subject] [-a attachment ] [-c cc-addr] [-b bcc-addr]\n\
+             [-r from-addr] [-h hops] [-A account] [-R reply-addr] [-S option] to-addr ...\n\
+       %s [-BDeHiInNRv~] [-T name] [-A account] -f [name] [-S option]\n\
+       %s [-BDeinNRv~] [-A account] [-u user] [-S option]\n"), progname, progname, progname);
+			exit(err);
 		}
 	}
 	if (ef != NULL) {
@@ -427,11 +430,13 @@ usage:
 		goto usage;
 	}
 	if (Rflag && to != NULL) {
-		fprintf(stderr, "The -R option is meaningless in send mode.\n");
+		fprintf(stderr, catgets(catd, CATSET, 269,
+			"The -R option is meaningless in send mode.\n"));
 		goto usage;
 	}
 	if (replyto && to == NULL) {
-		fprintf(stderr, "The reply-to is meaningless not in send mode.\n");
+		fprintf(stderr, catgets(catd, CATSET, 270,
+			"The reply-to is meaningless not in send mode.\n"));
 		goto usage;
 	}
 	if (Iflag && ef == NULL) {

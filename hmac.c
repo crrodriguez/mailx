@@ -32,6 +32,7 @@ Appendix -- Sample Code
 
 /*	Sccsid @(#)hmac.c	1.8 (gritter) 3/4/06	*/
 
+#include "config.h"
 #include "rcv.h"
 #include "md5.h"
 

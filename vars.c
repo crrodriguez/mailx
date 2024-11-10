@@ -42,6 +42,7 @@ static char sccsid[] = "@(#)vars.c	2.12 (gritter) 10/1/08";
 #endif
 #endif /* not lint */
 
+#include "config.h"
 #include "rcv.h"
 #include "extern.h"
 

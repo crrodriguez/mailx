@@ -33,6 +33,7 @@ static char sccsid[] = "@(#)base64.c	2.14 (gritter) 4/21/06";
  * base64 functions
  */
 
+#include "config.h"
 #include "rcv.h"
 #include "extern.h"
 

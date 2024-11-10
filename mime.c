@@ -44,6 +44,7 @@ static char sccsid[]  = "@(#)mime.c	2.71 (gritter) 7/5/10";
 #endif /* DOSCCS */
 #endif /* not lint */
 
+#include "config.h"
 #include "rcv.h"
 #include "extern.h"
 #include <ctype.h>

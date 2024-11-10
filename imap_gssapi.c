@@ -73,6 +73,8 @@ static char sccsid[] = "@(#)imap_gssapi.c	1.10 (gritter) 3/4/06";
 #endif
 #endif /* not lint */
 
+#include "config.h"
+
 /*
  * Implementation of IMAP GSSAPI authentication according to RFC 1731.
  */

@@ -42,6 +42,7 @@ static char sccsid[] = "@(#)quit.c	2.30 (gritter) 11/11/08";
 #endif
 #endif /* not lint */
 
+#include "config.h"
 #include "rcv.h"
 #include "extern.h"
 #include <stdio.h>

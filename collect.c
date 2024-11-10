@@ -49,6 +49,7 @@ static char sccsid[] = "@(#)collect.c	2.54 (gritter) 6/16/07";
  * ~ escapes.
  */
 
+#include "config.h"
 #include "rcv.h"
 #include "extern.h"
 #include <unistd.h>

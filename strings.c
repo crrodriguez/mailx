@@ -50,6 +50,7 @@ static char sccsid[] = "@(#)strings.c	2.6 (gritter) 3/4/06";
  * loop each time, so they need not be freed.
  */
 
+#include "config.h"
 #include "rcv.h"
 #include "extern.h"
 

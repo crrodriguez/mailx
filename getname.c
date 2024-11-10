@@ -42,6 +42,7 @@ static char sccsid[] = "@(#)getname.c	2.5 (gritter) 3/4/06";
 #endif
 #endif /* not lint */
 
+#include "config.h"
 #include "rcv.h"
 #include <pwd.h>
 #include "extern.h"

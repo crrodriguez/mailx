@@ -29,6 +29,7 @@
 
 /*	"@(#)nsserr.c	1.3 (gritter) 3/4/06"	*/
 
+#include "config.h"
 #include <sslerr.h>
 #include <secerr.h>
 

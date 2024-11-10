@@ -304,23 +304,49 @@ int main(void)
 			'for socket functionality in libsocket and libnsl' \
 			'#define HAVE_SOCKETS' '-lsocket -lnsl'
 
-#link_check ipv6 'for IPv6 functionality' '#define HAVE_IPv6_FUNCS' <<\!
-##include "config.h"
-##include <sys/types.h>
-##include <sys/socket.h>
-##include <netdb.h>
-##include <netinet/in.h>
-##ifdef	HAVE_ARPA_INET_H
-##include <arpa/inet.h>
-##endif	/* HAVE_ARPA_INET_H */
-#
-#int main(void)
-#{
-#	struct addrinfo	a, *ap;
-#	getaddrinfo("foo", "0", &a, &ap);
-#	return 0;
-#}
-#!
+cat >$tmp1.c <<\!
+#include "config.h"
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <netdb.h>
+#include <netinet/in.h>
+#ifdef HAVE_ARPA_INET_H
+#include <arpa/inet.h>
+#endif /* HAVE_ARPA_INET_H */
+
+int main()
+{
+	struct addrinfo a, *ap;
+	getaddrinfo("foo", "0", &a, &ap);
+	return 0;
+}
+!
+
+cat >$tmp2.c <<\!
+#include "config.h"
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <netdb.h>
+#include <netinet/in.h>
+#ifdef HAVE_ARPA_INET_H
+#include <arpa/inet.h>
+#endif /* HAVE_ARPA_INET_H */
+
+int main()
+{
+	struct sockaddr a;
+	getnameinfo(&a, 0, "foo", 3, "bar", 3, NI_NUMERICHOST);
+	return 0;
+}
+!
+
+<$tmp1.c link_check ipv6 'for IPv6 functionality getaddrinfo' '#define HAVE_GETADDRINFO' &&
+	<$tmp2.c link_check ipv6 'for IPv6 functionality getnameinfo' '#define HAVE_GETNAMEINFO'
+echo \
+'#if defined(HAVE_GETADDRINFO) && defined(HAVE_GETNAMEINFO)
+#  undef  HAVE_IPv6_FUNCS
+#  define HAVE_IPv6_FUNCS
+#endif' >>$out
 
 link_check nss 'for Network Security Services (NSS)' '#define USE_SSL
 #define USE_NSS' '-lsmime3 -lnss3 -lssl3 -lnspr4 -lplc4' <<\! || \

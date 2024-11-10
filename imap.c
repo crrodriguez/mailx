@@ -3541,7 +3541,7 @@ imap_read_date(const char *cp)
 const char *
 imap_make_date_time(time_t t)
 {
-	static char	s[30];
+	static char	s[64];
 	struct tm	*tmptr;
 	int	tzdiff, tzdiff_hour, tzdiff_min;
 

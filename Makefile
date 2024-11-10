@@ -10,6 +10,7 @@ PREFIX		= /usr/local
 BINDIR		= $(PREFIX)/bin
 MANDIR		= $(PREFIX)/share/man
 SYSCONFDIR	= /etc
+MAILRC		= /etc/mail.rc
 
 DESTDIR		=
 
@@ -51,7 +52,7 @@ IPv6		= -DHAVE_IPv6_FUNCS
 #
 # Binaries are stripped with this command after installation.
 #
-STRIP = strip
+STRIP = true
 
 ###########################################################################
 ###########################################################################
