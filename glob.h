@@ -42,7 +42,7 @@
  * A bunch of global variable declarations lie herein.
  * def.h must be included first.
  */
-
+#pragma once
 #if defined(_MAIL_GLOBS_)
 #  undef  _E
 #  define _E

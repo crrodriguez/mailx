@@ -44,7 +44,7 @@
  * This file is included by normal files which want both
  * globals and declarations.
  */
-
+#pragma once
 #include "config.h"
 
 #include <sys/types.h>

@@ -44,6 +44,8 @@
  * Author: Kurt Shoens (UCB) March 25, 1978
  */
 
+#pragma once
+
 #if !defined (NI_MAXHOST) || (NI_MAXHOST) < 1025
 #undef	NI_MAXHOST
 #define	NI_MAXHOST	1025
