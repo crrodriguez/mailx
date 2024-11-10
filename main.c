@@ -52,6 +52,11 @@ static char sccsid[] = "@(#)main.c	2.51 (gritter) 10/1/07";
  * Note: We set egid to realgid ... and only if we need the egid we will
  *       switch back temporary.  Nevertheless, I do not like seg faults.
  *       Werner Fink, <werner@suse.de>
+ * ---
+ * We want to set reply-to on the command line to deal with antispam rules
+ * and adresses behind firewalls.
+ * 2000-07-19, poc@pocnet.net
+ * Changes by werner@suse.de (move Option r to R, make ~R work)
  */
 
 
@@ -87,9 +92,9 @@ static void setscreensize(int dummy);
 int 
 main(int argc, char *argv[])
 {
-	const char optstr[] = "A:BHEFINVT:RS:a:b:c:dDefh:inqr:s:tu:v~";
+	const char optstr[] = "A:BHEFINVT:R::S:a:b:c:dDefh:inqr:s:tu:v~";
 	int i, existonly = 0, headersonly = 0, sendflag = 0;
-	struct name *to, *cc, *bcc, *smopts;
+	struct name *to, *cc, *bcc, *replyto, *smopts;
 	struct attachment *attach;
 	char *subject, *cp, *ef, *qf = NULL, *fromaddr = NULL, *Aflag = NULL;
 	char nosrc = 0;
@@ -179,6 +184,8 @@ main(int argc, char *argv[])
 	attach = NULL;
 	smopts = NULL;
 	subject = NULL;
+	replyto = NULL;
+
 	while ((i = getopt(argc, argv, optstr)) != EOF) {
 		switch (i) {
 		case 'V':
@@ -348,12 +355,18 @@ main(int argc, char *argv[])
 			Aflag = optarg;
 			break;
 		case 'R':
-			Rflag = 1;
+			/*
+			 * Set the Reply-to Address (as who we send mail)
+			 */
+			if (optarg && *optarg)
+				replyto = checkaddrs(cat(replyto, extract(optarg, GREPLYTO|GFULL)));
+			else
+				Rflag = 1;
 			break;
 		case '?':
 usage:
 			fprintf(stderr, catgets(catd, CATSET, 135,
-"Usage: %s -eiIUdEFntBDNHRV~ -T FILE -u USER -h hops -r address -s SUBJECT -a FILE -q FILE -f FILE -A ACCOUNT -b USERS -c USERS -S OPTION users\n"), progname);
+"Usage: %s -eiIUdEFntBDNHV~ [-R [reply-address]] -T FILE -u USER -h hops -r address -s SUBJECT -a FILE -q FILE -f FILE -A ACCOUNT -b USERS -c USERS -S OPTION users\n"), progname);
 			exit(2);
 		}
 	}
@@ -385,6 +398,10 @@ usage:
 	}
 	if (Rflag && to != NULL) {
 		fprintf(stderr, "The -R option is meaningless in send mode.\n");
+		goto usage;
+	}
+	if (replyto && to == NULL) {
+		fprintf(stderr, "The reply-to is meaningless not in send mode.\n");
 		goto usage;
 	}
 	if (Iflag && ef == NULL) {
@@ -441,8 +458,8 @@ usage:
 	if (fromaddr)
 		assign("from", fromaddr);
 	if (!rcvmode) {
-		mail(to, cc, bcc, smopts, subject, attach, qf, Fflag, tflag,
-		    Eflag);
+		mail(to, cc, bcc, replyto, smopts, subject, attach, qf,
+		    Fflag, tflag, Eflag);
 		/*
 		 * why wait?
 		 */

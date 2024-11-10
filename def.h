@@ -393,7 +393,7 @@ enum gfield {
 	GUA	= 128,		/* User-Agent field */
 	GMIME	= 256,		/* MIME 1.0 fields */
 	GMSGID	= 512,		/* a Message-ID */
-	/*	  1024 */	/* unused */
+	GREPLYTO= 1024,		/* a Reply-To field */
 	GIDENT	= 2048,		/* From:, Reply-To: and Organization: field */
 	GREF	= 4096,		/* References: field */
 	GDATE	= 8192,		/* Date: field */
@@ -403,7 +403,7 @@ enum gfield {
 	GFILES	= 131072	/* include filename addresses */
 };
 
-#define	GMASK	(GTO|GSUBJECT|GCC|GBCC)	/* Mask of places from whence */
+#define	GMASK	(GTO|GSUBJECT|GCC|GBCC|GREPLYTO)	/* Mask of places from whence */
 
 #define	visible(mp)	(((mp)->m_flag&(MDELETED|MHIDDEN|MKILL))==0|| \
 				dot==(mp) && (mp)->m_flag&MKILL)

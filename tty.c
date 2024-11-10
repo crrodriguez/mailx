@@ -338,6 +338,12 @@ grabh(struct header *hp, enum gfield gflags, int subjfirst)
 		hp->h_organization = rtty_internal("Organization: ",
 				hp->h_organization);
 	}
+	if (gflags & GREPLYTO) {
+		TTYSET_CHECK(hp->h_replyto)
+		hp->h_replyto = checkaddrs(sextract(rtty_internal("Reply-To: ",
+						   detract(hp->h_replyto, comma)),
+					GREPLYTO|GFULL));
+	}
 	if (!subjfirst)
 		GRAB_SUBJECT
 out:

@@ -720,7 +720,7 @@ cont:
 			 * Grab a bunch of headers.
 			 */
 			do
-				grabh(hp, GTO|GSUBJECT|GCC|GBCC,
+				grabh(hp, GTO|GSUBJECT|GCC|GBCC|GREPLYTO,
 						value("bsdcompat") != NULL &&
 						value("bsdorder") != NULL);
 			while (hp->h_to == NULL);
@@ -743,13 +743,21 @@ cont:
 			break;
 		case 's':
 			/*
-			 * Set the Subject list.
+			 * Set the Subject line.
 			 */
 			cp = &linebuf[2];
 			while (whitechar(*cp & 0377))
 				cp++;
 			hp->h_subject = savestr(cp);
 			break;
+		case 'R':
+			/*
+			 * Add to the Reply-To list.
+			 */
+			cp = &linebuf[2];
+			while ((hp->h_replyto = checkaddrs(cat(hp->h_replyto,
+					sextract(&linebuf[2], GREPLYTO|GFULL))))
+				== NULL);
 		case '@':
 			/*
 			 * Edit the attachment list.

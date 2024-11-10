@@ -43,7 +43,7 @@ mailx \- send and receive Internet mail
 .PD 0
 .HP
 .ad l
-\fBmailx\fR [\fB\-BDdEFintv~\fR]
+\fBmailx\fR [\fB\-BDdEFintv~\fR] [\fB\-R\fR [\fIaddress\fR]]
 [\fB\-s\fI\ subject\fR] [\fB\-a\fI\ attachment\fR ]
 [\fB\-c\fI\ cc-addr\fR] [\fB\-b\fI\ bcc-addr\fR] [\fB\-r\fI\ from-addr\fR]
 [\fB\-h\fI\ hops\fR]
@@ -203,8 +203,12 @@ it is recommended to set the
 .I from
 variable directly instead.
 .TP
+.BI \-R\ \fR|\fB\ \-R \ address
+Without any argument any folders will be opened read-only.
+With argument an reply-to adress is specifed on command line.
+Only the first argument after the
 .B \-R
-Opens any folders read-only.
+flag is used as the address.
 .TP
 .BI \-s \ subject
 Specify subject on command line (only the first argument after the
@@ -2130,6 +2134,9 @@ Abort the message being sent,
 copying the message to
 `dead.letter' in the user's home directory
 if save is set.
+.TP
+.BI ~R string
+Use string as the Reply-To field.
 .TP
 .BI ~r filename
 Read the named file into the message.

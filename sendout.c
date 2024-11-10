@@ -712,7 +712,7 @@ savemail(char *name, FILE *fi)
  * which does all the dirty work.
  */
 int 
-mail(struct name *to, struct name *cc, struct name *bcc,
+mail(struct name *to, struct name *cc, struct name *bcc, struct name *replyto,
 		struct name *smopts, char *subject, struct attachment *attach,
 		char *quotefile, int recipient_record, int tflag, int Eflag)
 {
@@ -731,6 +731,7 @@ mail(struct name *to, struct name *cc, struct name *bcc,
 		head.h_to = to;
 		head.h_cc = cc;
 		head.h_bcc = bcc;
+		head.h_replyto = replyto;
 	}
 	head.h_attach = attach;
 	head.h_smopts = smopts;

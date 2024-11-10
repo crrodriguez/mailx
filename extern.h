@@ -457,7 +457,7 @@ int send(struct message *mp, FILE *obuf, struct ignoretab *doign,
 		char *prefix, enum sendaction action, off_t *stats);
 /* sendout.c */
 char *makeboundary(void);
-int mail(struct name *to, struct name *cc, struct name *bcc,
+int mail(struct name *to, struct name *cc, struct name *bcc, struct name *replyto,
 		struct name *smopts, char *subject, struct attachment *attach,
 		char *quotefile, int recipient_record, int tflag, int Eflag);
 int sendmail(void *v);
