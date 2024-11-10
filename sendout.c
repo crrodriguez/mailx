@@ -226,6 +226,23 @@ attach_file1(struct attachment *ap, FILE *fo, int dosign)
 		charset = ap->a_charset;
 	convert = get_mime_convert(fi, &contenttype, &charset, &isclean,
 			dosign);
+#ifdef	HAVE_ICONV
+	tcs = gettcharset();
+	if (isclean & MIME_UTF8)
+	{
+		tcs = "utf-8";
+	}
+	if (isclean & MIME_LATIN) {
+		tcs = value("charset");
+		if (tcs == NULL && wantcharset && wantcharset != (char *)-1)
+			tcs = wantcharset;
+	}
+	if (tcs == NULL)  {
+		contenttype = "application/octet-stream";
+		charset = NULL;
+		convert = CONV_TOB64;
+	}
+#endif
 	fprintf(fo,
 		"\n--%s\n"
 		"Content-Type: %s",
@@ -255,11 +272,10 @@ attach_file1(struct attachment *ap, FILE *fo, int dosign)
 		iconv_close(iconvd);
 		iconvd = (iconv_t)-1;
 	}
-	tcs = gettcharset();
 	if ((isclean & (MIME_HASNUL|MIME_CTRLCHAR)) == 0 &&
 			ascncasecmp(contenttype, "text/", 5) == 0 &&
-			isclean & MIME_HIGHBIT &&
-			charset != NULL) {
+			(isclean & MIME_HIGHBIT) &&
+			charset != NULL && tcs != NULL) {
 		if ((iconvd = iconv_open_ft(charset, tcs)) == (iconv_t)-1 &&
 				errno != 0) {
 			if (errno == EINVAL)
@@ -467,11 +483,12 @@ infix(struct header *hp, FILE *fi, int dosign)
 	}
 	rm(tempMail);
 	Ftfree(&tempMail);
-	convert = get_mime_convert(fi, &contenttype, &charset,
-			&isclean, dosign);
+	convert = get_mime_convert(fi, &contenttype, &charset, &isclean,
+			dosign);
 #ifdef	HAVE_ICONV
 	tcs = gettcharset();
-	if ((convhdr = need_hdrconv(hp, GTO|GSUBJECT|GCC|GBCC|GIDENT)) != 0) {
+	if ((convhdr = need_hdrconv(hp, GTO|GSUBJECT|GCC|GBCC|GIDENT)) != 0 &&
+	    tcs != NULL) {
 		if (iconvd != (iconv_t)-1)
 			iconv_close(iconvd);
 		if ((iconvd = iconv_open_ft(convhdr, tcs)) == (iconv_t)-1
@@ -505,10 +522,17 @@ infix(struct header *hp, FILE *fi, int dosign)
 		iconv_close(iconvd);
 		iconvd = (iconv_t)-1;
 	}
+	if (isclean & MIME_UTF8)
+		tcs = "utf-8";
+	if (isclean & MIME_LATIN) {
+		tcs = value("charset");
+		if (tcs == NULL && wantcharset && wantcharset != (char *)-1)
+			tcs = wantcharset;
+	}
 	if ((isclean & (MIME_HASNUL|MIME_CTRLCHAR)) == 0 &&
 			ascncasecmp(contenttype, "text/", 5) == 0 &&
-			isclean & MIME_HIGHBIT &&
-			charset != NULL) {
+			(isclean & MIME_HIGHBIT) &&
+			charset != NULL && tcs != NULL) {
 		if (iconvd != (iconv_t)-1)
 			iconv_close(iconvd);
 		if ((iconvd = iconv_open_ft(charset, tcs)) == (iconv_t)-1

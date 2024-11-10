@@ -142,7 +142,9 @@ enum mimeclean {
 	MIME_LONGLINES	= 002,		/* has lines too long for RFC 2822 */
 	MIME_CTRLCHAR	= 004,		/* contains control characters */
 	MIME_HASNUL	= 010,		/* contains \0 characters */
-	MIME_NOTERMNL	= 020		/* lacks a terminating newline */
+	MIME_NOTERMNL	= 020,		/* lacks a terminating newline */
+	MIME_UTF8	= 040,		/* UTF-8 high bit multi byte characters */
+	MIME_LATIN	= 0100		/* Latin high bit single byte characters */
 };
 
 enum tdflags {
