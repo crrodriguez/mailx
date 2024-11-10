@@ -2723,6 +2723,8 @@ Only applicable if SSL/TLS support is built using OpenSSL.
 Accept SSLv2 connections.
 These are normally not allowed
 because this protocol version is insecure.
+.br
+.B WARNING: on modern systems SSLv2 as well as SSLv3 are unavailable!
 .TP
 .B stealthmua
 Inhibits the generation of
@@ -3599,6 +3601,8 @@ Selects a SSL/TLS protocol version;
 valid values are `ssl2', `ssl3', and `tls1'.
 If unset, the method is selected automatically,
 if possible.
+.br
+.B WARNING: Do not use this option. 'ssl2', 'ssl3' are no longer available and 'tls1' forces use of TLS 1.0
 .TP
 \fBssl-method-\fIuser\fB@\fIhost\fR
 Overrides
@@ -3609,6 +3613,8 @@ for a specific account.
 Gives the pathname to an entropy daemon socket,
 see
 .IR RAND_egd (3).
+.br
+.B WARNING: On Linux this API is unavailable.
 .TP
 .B ssl-rand-file
 Gives the pathname to a file with entropy data,
@@ -3617,6 +3623,8 @@ see
 If the file is a regular file writable by the invoking user,
 new data is written to it after it has been loaded.
 Only applicable if SSL/TLS support is built using OpenSSL.
+.br
+.B WARNING: On linux the CSPRNG is seeded automatically and this option has no effect.
 .TP
 .B ssl-verify
 Sets the action to be performed if an error occurs

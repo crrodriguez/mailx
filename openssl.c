@@ -135,10 +135,18 @@ ssl_rand_init(void)
 {
 	char *cp;
 	int state = 0;
+	
+	if(RAND_status())
+		return 1;
 
 	if ((cp = value("ssl-rand-egd")) != NULL) {
 		cp = expand(cp);
-		if (RAND_egd(cp) == -1) {
+#ifndef OPENSSL_NO_EGD
+		if (RAND_egd(cp) == -1)
+#else
+		if (1)
+#endif
+		{
 			fprintf(stderr, catgets(catd, CATSET, 245,
 				"entropy daemon at \"%s\" not available\n"),
 					cp);
@@ -221,12 +229,13 @@ ssl_select_method(const char *uhp)
 
 	cp = ssl_method_string(uhp);
 	if (cp != NULL) {
+#if defined(OPENSSL_VERSION_NUMBER) && OPENSSL_VERSION_NUMBER < 0x1010006fL
 #ifndef OPENSSL_NO_SSL2
 		if (equal(cp, "ssl2"))
 			method = SSLv2_client_method();
 		else
-#endif 
-            if (equal(cp, "ssl3"))
+#endif
+		if (equal(cp, "ssl3"))
 			method = SSLv3_client_method();
 		else if (equal(cp, "tls1"))
 			method = TLSv1_client_method();
@@ -235,8 +244,25 @@ ssl_select_method(const char *uhp)
 					"Invalid SSL method \"%s\"\n"), cp);
 			method = SSLv23_client_method();
 		}
+#else
+		method = NULL;
+		if (equal(cp, "tls"))
+			method = TLS_client_method();
+		else if (equal(cp, "dtls"))
+			method = DTLS_client_method();
+
+		if (!method) {
+			fprintf(stderr, catgets(catd, CATSET, 244,
+					"Invalid SSL method \"%s\"\n"), cp);
+			method = TLS_client_method();
+		}
+#endif
 	} else
+#if defined(OPENSSL_VERSION_NUMBER) && OPENSSL_VERSION_NUMBER < 0x1010006fL
 		method = SSLv23_client_method();
+#else
+		method = TLS_client_method();
+#endif
 	return method;
 }
 
@@ -307,6 +333,8 @@ ssl_certificate(struct sock *sp, const char *uhp)
 				"cannot load private key from file %s\n"),
 						key);
 			ac_free(keyvar);
+			if(SSL_CTX_check_private_key(sp->s_ctx) != 1)
+				fprintf(stderr, "certificate/key mismatch");
 		} else
 			fprintf(stderr, catgets(catd, CATSET, 239,
 				"cannot load certificate from file %s\n"),
@@ -383,7 +411,7 @@ ssl_open(const char *server, struct sock *sp, const char *uhp)
 	/* available with OpenSSL 0.9.6 or later */
 	SSL_CTX_set_mode(sp->s_ctx, SSL_MODE_AUTO_RETRY);
 #endif	/* SSL_MODE_AUTO_RETRY */
-	options = SSL_OP_ALL;
+	options = SSL_OP_ALL|SSL_OP_NO_TICKET;
 	if (value("ssl-v2-allow") == NULL)
 		options |= SSL_OP_NO_SSLv2;
 	SSL_CTX_set_options(sp->s_ctx, options);
