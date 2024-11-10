@@ -1088,7 +1088,7 @@ getpipefile(char *pipecmd, FILE **qbuf, int quote)
 			Ftfree(&tempPipe);
 		}
 		if ((shell = value("SHELL")) == NULL)
-			shell = SHELL;
+			shell = PATH_CSHELL;
 		if ((rbuf = Popen(pipecmd, "W", shell, fileno(*qbuf)))
 				== NULL) {
 			perror(pipecmd);

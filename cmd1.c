@@ -78,7 +78,7 @@ get_pager(void)
 
 	cp = value("PAGER");
 	if (cp == NULL || *cp == '\0')
-		cp = value("bsdcompat") ? "more" : "pg";
+		cp = value("bsdcompat") ? PATH_MORE : PATH_PG;
 	return cp;
 }
 
@@ -757,7 +757,7 @@ type1(int *msgvec, int doign, int page, int pipe, int decode,
 	if (pipe) {
 		cp = value("SHELL");
 		if (cp == NULL)
-			cp = SHELL;
+			cp = PATH_CSHELL;
 		obuf = Popen(cmd, "w", cp, 1);
 		if (obuf == NULL) {
 			perror(cmd);

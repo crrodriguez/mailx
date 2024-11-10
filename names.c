@@ -343,7 +343,7 @@ outof(struct name *names, FILE *fo, struct header *hp)
 			 * on one another.
 			 */
 			if ((shell = value("SHELL")) == NULL)
-				shell = SHELL;
+				shell = PATH_CSHELL;
 			sigemptyset(&nset);
 			sigaddset(&nset, SIGHUP);
 			sigaddset(&nset, SIGINT);

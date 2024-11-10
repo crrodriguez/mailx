@@ -82,7 +82,7 @@ maildir_access(const char *fname)
 static int
 perhaps_setgid(const char *name, gid_t gid)
 {
-	char safepath[]= MAILSPOOL;
+	char safepath[]= PATH_MAILDIR;
 
 	if (strncmp(name, safepath, sizeof (safepath)-1) ||
 			strchr(name + sizeof (safepath), '/'))

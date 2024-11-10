@@ -70,7 +70,7 @@ findmail(char *user, int force, char *buf, int size)
 			which_protocol(cp) == PROTO_IMAP) {
 		snprintf(buf, size, "%s/INBOX", protbase(cp));
 	} else if (force || (mbox = value("MAIL")) == NULL) {
-		snprintf(buf, size, "%s/%s", MAILSPOOL, user);
+		snprintf(buf, size, "%s/%s", PATH_MAILDIR, user);
 	} else {
 		strncpy(buf, mbox, size);
 		buf[size-1]='\0';

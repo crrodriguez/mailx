@@ -90,7 +90,7 @@ shell(void *v)
 	if (bangexp(&cmd, &cmdsize) < 0)
 		return 1;
 	if ((shell = value("SHELL")) == NULL)
-		shell = SHELL;
+		shell = PATH_CSHELL;
 	run_command(shell, 0, -1, -1, "-c", cmd, NULL);
 	safe_signal(SIGINT, sigint);
 	printf("!\n");
@@ -109,7 +109,7 @@ dosh(void *v)
 	char *shell;
 
 	if ((shell = value("SHELL")) == NULL)
-		shell = SHELL;
+		shell = PATH_CSHELL;
 	run_command(shell, 0, -1, -1, NULL, NULL, NULL);
 	safe_signal(SIGINT, sigint);
 	putchar('\n');

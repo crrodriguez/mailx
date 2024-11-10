@@ -403,7 +403,7 @@ usage:
 	rcvmode = !to && !tflag;
 	spreserve();
 	if (!nosrc)
-		load(MAILRC);
+		load(PATH_MASTER_RC);
 	/*
 	 * Expand returns a savestr, but load only uses the file name
 	 * for fopen, so it's safe to do this.

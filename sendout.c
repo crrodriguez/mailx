@@ -884,7 +884,7 @@ start_mta(struct name *to, struct name *mailargs, FILE *input,
 			if ((cp = value("sendmail")) != NULL)
 				cp = expand(cp);
 			else
-				cp = SENDMAIL;
+				cp = PATH_SENDMAIL;
 			execv(cp, args);
 			perror(cp);
 		}

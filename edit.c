@@ -153,7 +153,7 @@ edit1(int *msgvec, int type)
  * Run an editor on the file at "fpp" of "size" bytes,
  * and return a new file pointer.
  * Signals must be handled by the caller.
- * "Type" is 'e' for ed, 'v' for vi.
+ * "Type" is 'e' for PATH_EX, 'v' for PATH_VI.
  */
 FILE *
 run_editor(FILE *fp, off_t size, int type, int readonly,
@@ -212,7 +212,7 @@ run_editor(FILE *fp, off_t size, int type, int readonly,
 	}
 	nf = NULL;
 	if ((edit = value(type == 'e' ? "EDITOR" : "VISUAL")) == NULL)
-		edit = type == 'e' ? "ed" : "vi";
+		edit = type == 'e' ? PATH_EX : PATH_VI;
 	sigemptyset(&set);
 	if (run_command(edit, oldint != SIG_IGN ? &set : NULL, -1, -1,
 				tempEdit, NULL, NULL) < 0) {

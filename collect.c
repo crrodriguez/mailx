@@ -121,7 +121,7 @@ insertcommand(FILE *fp, char *cmd)
 	if (sigsetjmp(pipejmp, 1))
 		goto endpipe;
 	if (cp == NULL)
-		cp = SHELL;
+		cp = PATH_CSHELL;
 	if ((obuf = Popen(cmd, "r", cp, 0)) == NULL) {
 		perror(cmd);
 		return;
@@ -1051,7 +1051,7 @@ mespipe(char *cmd)
 	 * stdout = new message.
 	 */
 	if ((shell = value("SHELL")) == NULL)
-		shell = SHELL;
+		shell = PATH_CSHELL;
 	if (run_command(shell,
 	    0, fileno(collf), fileno(nf), "-c", cmd, NULL) < 0) {
 		Fclose(nf);

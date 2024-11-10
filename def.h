@@ -642,3 +642,68 @@ enum ssl_vrfy_level {
 	VRFY_STRICT
 };
 #endif	/* USE_SSL */
+
+#include <paths.h>
+#ifndef PATH_MORE
+#  ifdef _PATH_MORE
+#    define PATH_MORE _PATH_MORE
+#  else
+#    define PATH_MORE "/usr/bin/more"
+#  endif
+#endif
+#ifndef PATH_PG
+#  ifdef _PATH_PG
+#    define PATH_PG _PATH_PG
+#  else
+#    define PATH_PG "/usr/bin/less"
+#  endif
+#endif
+#ifndef PATH_CSHELL
+#  ifdef _PATH_CSHELL
+#    define PATH_CSHELL _PATH_CSHELL
+#  else
+#    define PATH_CSHELL "/usr/bin/tcsh"
+#  endif
+#endif
+#ifndef PATH_MAILDIR
+#  ifdef _PATH_MAILDIR
+#    define PATH_MAILDIR _PATH_MAILDIR
+#  else
+#    define PATH_MAILDIR "/var/mail"
+#  endif
+#endif
+#ifndef PATH_EX
+#  ifdef _PATH_EX
+#    define PATH_EX _PATH_EX
+#  else
+#    define PATH_EX "/usr/bin/ex"
+#  endif
+#endif
+#ifndef PATH_VI
+#  ifdef _PATH_VI
+#    define PATH_VI _PATH_VI
+#  else
+#    define PATH_VI "/usr/bin/vi"
+#  endif
+#endif
+#ifndef PATH_MASTER_RC
+#  ifdef _PATH_MASTER_RC
+#    define PATH_MASTER_RC _PATH_MASTER_RC
+#  else
+#    define PATH_MASTER_RC "/etc/mail.rc"
+#  endif
+#endif
+#ifndef PATH_SENDMAIL
+#  ifdef _PATH_SENDMAIL
+#    define PATH_SENDMAIL _PATH_SENDMAIL
+#  else
+#    define PATH_SENDMAIL "/usr/sbin/sendmail"
+#  endif
+#endif
+#ifndef PATH_TMP
+#  ifdef _PATH_TMP
+#    define PATH_TMP _PATH_TMP
+#  else
+#    define PATH_TMP "/tmp"
+#  endif
+#endif

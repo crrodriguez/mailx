@@ -121,7 +121,7 @@ tinit(void)
 		tmpdir = smalloc(strlen(cp) + 1);
 		strcpy(tmpdir, cp);
 	} else {
-		tmpdir = "/tmp";
+		tmpdir = PATH_TMP;
 	}
 	if (myname != NULL) {
 		if (getuserid(myname) < 0) {

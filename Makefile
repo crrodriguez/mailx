@@ -11,13 +11,9 @@ BINDIR		= $(PREFIX)/bin
 MANDIR		= $(PREFIX)/share/man
 SYSCONFDIR	= /etc
 
-MAILRC		= $(SYSCONFDIR)/nail.rc
-MAILSPOOL	= /var/mail
-SENDMAIL	= /usr/lib/sendmail
-
 DESTDIR		=
 
-UCBINSTALL	= /usr/ucb/install
+UCBINSTALL	= install
 
 # Define compiler, preprocessor, and linker flags here.
 # Note that some Linux/glibc versions need -D_GNU_SOURCE in CPPFLAGS, or
@@ -50,7 +46,7 @@ SHELL		= /bin/sh
 
 # If you know that the IPv6 functions work on your machine, you can enable
 # them here.
-#IPv6		= -DHAVE_IPv6_FUNCS
+##IPv6		= -DHAVE_IPv6_FUNCS
 
 #
 # Binaries are stripped with this command after installation.
@@ -63,8 +59,7 @@ STRIP = strip
 ###########################################################################
 ###########################################################################
 
-FEATURES	= -DMAILRC='"$(MAILRC)"' -DMAILSPOOL='"$(MAILSPOOL)"' \
-			-DSENDMAIL='"$(SENDMAIL)"' $(IPv6)
+FEATURES	= $(IPv6)
 
 OBJ = aux.o base64.o cache.o cmd1.o cmd2.o cmd3.o cmdtab.o collect.o \
 	dotlock.o edit.o fio.o getname.o getopt.o head.o hmac.o \
