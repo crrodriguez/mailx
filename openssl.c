@@ -36,16 +36,8 @@
  * SUCH DAMAGE.
  */
 
-#ifndef lint
-#ifdef	DOSCCS
-static char sccsid[] = "@(#)openssl.c	1.26 (gritter) 5/26/09";
-#endif
-#endif /* not lint */
-
 #include "config.h"
 
-#ifndef	USE_NSS
-#ifdef	USE_OPENSSL
 
 #include <setjmp.h>
 #include <termios.h>
@@ -106,13 +98,8 @@ static const SSL_METHOD *ssl_select_method(const char *uhp);
 static void ssl_load_verifications(struct sock *sp);
 static void ssl_certificate(struct sock *sp, const char *uhp);
 static enum okay ssl_check_host(const char *server, struct sock *sp);
-#ifdef HAVE_STACK_OF
 static int smime_verify(struct message *m, int n, STACK_OF(X509) *chain,
 		X509_STORE *store);
-#else
-static int smime_verify(struct message *m, int n, STACK *chain,
-		X509_STORE *store);
-#endif
 static EVP_CIPHER *smime_cipher(const char *name);
 static int ssl_password_cb(char *buf, int size, int rwflag, void *userdata);
 static FILE *smime_sign_cert(const char *xname, const char *xname2, int warn);
@@ -180,10 +167,6 @@ ssl_init(void)
 	verbose = value("verbose") != NULL;
 	if (initialized == 0) {
 		SSL_library_init();
-/* Load all bundled ENGINEs into memory and make them visible */
- ENGINE_load_builtin_engines();
- /* Register all of them for every algorithm they collectively implement */
- ENGINE_register_all_complete();
 		initialized = 1;
 	}
 	if (rand_init == 0)
@@ -349,11 +332,7 @@ ssl_check_host(const char *server, struct sock *sp)
 	X509 *cert;
 	X509_NAME *subj;
 	char data[256];
-#ifdef HAVE_STACK_OF
 	STACK_OF(GENERAL_NAME)	*gens;
-#else
-	/*GENERAL_NAMES*/STACK	*gens;
-#endif
 	GENERAL_NAME	*gen;
 	int	i;
 
@@ -542,11 +521,8 @@ smime_sign(FILE *ip, struct header *headp)
 }
 
 static int
-#ifdef HAVE_STACK_OF
 smime_verify(struct message *m, int n, STACK_OF(X509) *chain, X509_STORE *store)
-#else
-smime_verify(struct message *m, int n, STACK *chain, X509_STORE *store)
-#endif
+
 {
 	struct message	*x;
 	char	*cp, *sender, *to, *cc, *cnttype;
@@ -555,12 +531,8 @@ smime_verify(struct message *m, int n, STACK *chain, X509_STORE *store)
 	off_t	size;
 	BIO	*fb, *pb;
 	PKCS7	*pkcs7;
-#ifdef HAVE_STACK_OF
 	STACK_OF(X509)	*certs;
 	STACK_OF(GENERAL_NAME)	*gens;
-#else
-	STACK	*certs, *gens;
-#endif
 	X509	*cert;
 	X509_NAME	*subj;
 	char	data[LINESIZE];
@@ -669,11 +641,7 @@ cverify(void *vp)
 {
 	int	*msgvec = vp, *ip;
 	int	ec = 0;
-#ifdef HAVE_STACK_OF
 	STACK_OF(X509)	*chain = NULL;
-#else
-	STACK	*chain = NULL;
-#endif
 	X509_STORE	*store;
 	char	*ca_dir, *ca_file;
 
@@ -746,11 +714,7 @@ smime_encrypt(FILE *ip, const char *certfile, const char *to)
 	X509	*cert;
 	PKCS7	*pkcs7;
 	BIO	*bb, *yb;
-#ifdef HAVE_STACK_OF
 	STACK_OF(X509)	*certs;
-#else
-	STACK	*certs;
-#endif
 	EVP_CIPHER	*cipher;
 
 	certfile = expand((char *)certfile);
@@ -1013,13 +977,8 @@ smime_certsave(struct message *m, int n, FILE *op)
 	off_t	size;
 	BIO	*fb, *pb;
 	PKCS7	*pkcs7;
-#ifdef HAVE_STACK_OF
 	STACK_OF(X509)	*certs;
 	STACK_OF(X509)	*chain = NULL;
-#else
-	STACK	*certs;
-	STACK	*chain = NULL;
-#endif
 	X509	*cert;
 	enum okay	ok = OKAY;
 
@@ -1080,7 +1039,6 @@ loop:	to = hfield("to", m);
 	return ok;
 }
 
-#if defined (X509_V_FLAG_CRL_CHECK) && defined (X509_V_FLAG_CRL_CHECK_ALL)
 static enum okay 
 load_crl1(X509_STORE *store, const char *name)
 {
@@ -1099,32 +1057,24 @@ load_crl1(X509_STORE *store, const char *name)
 	}
 	return OKAY;
 }
-#endif	/* new OpenSSL */
 
 static enum okay 
 load_crls(X509_STORE *store, const char *vfile, const char *vdir)
 {
 	char	*crl_file, *crl_dir;
-#if defined (X509_V_FLAG_CRL_CHECK) && defined (X509_V_FLAG_CRL_CHECK_ALL)
 	DIR	*dirfd;
 	struct dirent	*dp;
 	char	*fn = NULL;
 	int	fs = 0, ds, es;
-#endif	/* new OpenSSL */
+
 
 	if ((crl_file = value(vfile)) != NULL) {
-#if defined (X509_V_FLAG_CRL_CHECK) && defined (X509_V_FLAG_CRL_CHECK_ALL)
+
 		crl_file = expand(crl_file);
 		if (load_crl1(store, crl_file) != OKAY)
 			return STOP;
-#else	/* old OpenSSL */
-		fprintf(stderr,
-			"This OpenSSL version is too old to use CRLs.\n");
-		return STOP;
-#endif	/* old OpenSSL */
 	}
 	if ((crl_dir = value(vdir)) != NULL) {
-#if defined (X509_V_FLAG_CRL_CHECK) && defined (X509_V_FLAG_CRL_CHECK_ALL)
 		crl_dir = expand(crl_dir);
 		ds = strlen(crl_dir);
 		if ((dirfd = opendir(crl_dir)) == NULL) {
@@ -1153,68 +1103,13 @@ load_crls(X509_STORE *store, const char *vfile, const char *vdir)
 		}
 		closedir(dirfd);
 		free(fn);
-#else	/* old OpenSSL */
-		fprintf(stderr,
-			"This OpenSSL version is too old to use CRLs.\n");
-		return STOP;
-#endif	/* old OpenSSL */
 	}
-#if defined (X509_V_FLAG_CRL_CHECK) && defined (X509_V_FLAG_CRL_CHECK_ALL)
 	if (crl_file || crl_dir)
 		X509_STORE_set_flags(store, X509_V_FLAG_CRL_CHECK |
 				X509_V_FLAG_CRL_CHECK_ALL);
-#endif	/* old OpenSSL */
+
 	return OKAY;
 }
 
-#else	/* !USE_OPENSSL */
 
-#include <stdio.h>
 
-static void
-nosmime(void)
-{
-	fprintf(stderr, "No S/MIME support compiled in.\n");
-}
-
-/*ARGSUSED*/
-FILE *
-smime_sign(FILE *fp)
-{
-	nosmime();
-	return NULL;
-}
-
-/*ARGSUSED*/
-int 
-cverify(void *vp)
-{
-	nosmime();
-	return 1;
-}
-
-/*ARGSUSED*/
-FILE *
-smime_encrypt(FILE *fp, const char *certfile, const char *to)
-{
-	nosmime();
-	return NULL;
-}
-
-/*ARGSUSED*/
-struct message *
-smime_decrypt(struct message *m, const char *to, const char *cc, int signcall)
-{
-	nosmime();
-	return NULL;
-}
-
-/*ARGSUSED*/
-int 
-ccertsave(void *v)
-{
-	nosmime();
-	return 1;
-}
-#endif	/* !USE_OPENSSL */
-#endif	/* !USE_NSS */

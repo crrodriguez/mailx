@@ -169,15 +169,9 @@ enum protocol {
 
 struct sock {				/* data associated with a socket */
 	int	s_fd;			/* file descriptor */
-#ifdef	USE_SSL
 	int	s_use_ssl;		/* SSL is used */
-#if defined (USE_NSS)
-	void	*s_prfd;		/* NSPR file descriptor */
-#elif defined (USE_OPENSSL)
 	void	*s_ssl;			/* SSL object */
 	void	*s_ctx;			/* SSL context object */
-#endif	/* SSL library specific */
-#endif	/* USE_SSL */
 	char	*s_wbuf;		/* for buffered writes */
 	int	s_wbufsize;		/* allocated size of s_buf */
 	int	s_wbufpos;		/* position of first empty data byte */
@@ -636,14 +630,12 @@ struct	cw {
 };
 #endif	/* !HAVE_FCHDIR */
 
-#ifdef	USE_SSL
 enum ssl_vrfy_level {
 	VRFY_IGNORE,
 	VRFY_WARN,
 	VRFY_ASK,
 	VRFY_STRICT
 };
-#endif	/* USE_SSL */
 
 #include <paths.h>
 #ifndef PATH_MORE

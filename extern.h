@@ -401,16 +401,8 @@ struct name *elide(struct name *names);
 int count(struct name *np);
 struct name *delete_alternates(struct name *np);
 int is_myname(char *name);
-/* nss.c */
-#ifdef	USE_NSS
-enum okay ssl_open(const char *server, struct sock *sp, const char *uhp);
-void nss_gen_err(const char *fmt, ...);
-#endif	/* USE_NSS */
-/* openssl.c */
-#ifdef	USE_OPENSSL
 enum okay ssl_open(const char *server, struct sock *sp, const char *uhp);
 void ssl_gen_err(const char *fmt, ...);
-#endif	/* USE_OPENSSL */
 int cverify(void *vp);
 FILE *smime_sign(FILE *ip, struct header *);
 FILE *smime_encrypt(FILE *ip, const char *certfile, const char *to);
