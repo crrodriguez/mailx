@@ -454,8 +454,15 @@ usage:
 	input = stdin;
 	rcvmode = !to && !tflag;
 	spreserve();
-	if (!nosrc)
-		load(PATH_MASTER_RC);
+	if (!nosrc) {
+#ifdef DISTCONFMAILRC
+		struct stat st;
+		if (stat(PATH_MASTER_RC, &st) < 0)
+			load(DISTCONFMAILRC);
+		else
+#endif			
+			load(PATH_MASTER_RC);
+	}
 	/*
 	 * Expand returns a savestr, but load only uses the file name
 	 * for fopen, so it's safe to do this.

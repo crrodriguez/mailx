@@ -60,7 +60,7 @@ STRIP = true
 ###########################################################################
 ###########################################################################
 
-FEATURES	= $(IPv6)
+FEATURES	= $(IPv6) $(DISTCONF)
 
 OBJ = aux.o base64.o cache.o cmd1.o cmd2.o cmd3.o cmdtab.o collect.o \
 	dotlock.o edit.o fio.o getname.o getopt.o head.o hmac.o \
