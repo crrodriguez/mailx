@@ -575,7 +575,7 @@ unpack(struct name *smopts, struct name *np)
 	/*LINTED*/
 	top = (char **)salloc((t + extra) * sizeof *top);
 	ap = top;
-	*ap++ = "send-mail";
+	*ap++ = "sendmail";
 	*ap++ = "-i";
 	if (metoo)
 		*ap++ = "-m";
