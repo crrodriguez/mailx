@@ -1023,7 +1023,17 @@ sopen(const char *xserver, struct sock *sp, int use_ssl,
 	char	*cp;
 	char	*server = (char *)xserver;
 
-	if ((cp = strchr(server, ':')) != NULL) {
+	if (*server == '[' && (cp = strchr(server, ']')) != NULL) {
+		if (cp[1] == ':') {
+			portstr = &cp[2];
+#ifndef	HAVE_IPv6_FUNCS
+			port = strtol(portstr, NULL, 10);
+#endif	/* HAVE_IPv6_FUNCS */
+		}
+		server = salloc(cp - xserver);
+		memcpy(server, xserver+1, cp - xserver - 1);
+		server[cp - xserver - 1] = '\0';
+	} else if ((cp = strchr(server, ':')) != NULL) {
 		portstr = &cp[1];
 #ifndef	HAVE_IPv6_FUNCS
 		port = strtol(portstr, NULL, 10);

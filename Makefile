@@ -46,7 +46,7 @@ SHELL		= /bin/sh
 
 # If you know that the IPv6 functions work on your machine, you can enable
 # them here.
-##IPv6		= -DHAVE_IPv6_FUNCS
+IPv6		= -DHAVE_IPv6_FUNCS
 
 #
 # Binaries are stripped with this command after installation.
