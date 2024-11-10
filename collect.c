@@ -278,8 +278,8 @@ read_attachment_data(struct attachment *ap, unsigned number)
 		perror(ap->a_name);
 	}
 	if (ap->a_name && (value("attachment-ask-charset") ||
-			(cp = value("sendcharsets")) != NULL &&
-			strchr(cp, ',') != NULL)) {
+			((cp = value("sendcharsets")) != NULL &&
+			  strchr(cp, ',') != NULL))) {
 		snprintf(prefix, sizeof prefix, "#%u\tcharset: ", number);
 		ap->a_charset = readtty(prefix, ap->a_charset);
 	}
@@ -647,8 +647,8 @@ cont:
 		    value("interactive") != NULL &&
 		    (value("dot") != NULL || value("ignoreeof") != NULL))
 			break;
-		if (linebuf[0] != escape || (value("interactive") == NULL &&
-					tildeflag == 0 ||
+		if (linebuf[0] != escape || ((value("interactive") == NULL &&
+					tildeflag == 0) ||
 					tildeflag < 0)) {
 			if (putline(collf, linebuf, count) < 0)
 				goto err;

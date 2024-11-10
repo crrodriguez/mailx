@@ -913,8 +913,8 @@ get_mime_convert(FILE *fp, char **contenttype, char **charset,
 	int convert;
 
 	*isclean = mime_isclean(fp);
-	if (*isclean & MIME_HASNUL ||
-			*contenttype && ascncasecmp(*contenttype, "text/", 5)) {
+	if ((*isclean & MIME_HASNUL) ||
+			(*contenttype && ascncasecmp(*contenttype, "text/", 5))) {
 		convert = CONV_TOB64;
 		if (*contenttype == NULL ||
 				ascncasecmp(*contenttype, "text/", 5) == 0)
@@ -987,13 +987,13 @@ mime_write_toqp(struct str *in, FILE *fo, int (*mustquote)(int))
 	upper = in->s + in->l;
 	for (p = in->s, l = 0; p < upper; p++) {
 		if (mustquote(*p&0377) ||
-				p < upper-1 && p[1] == '\n' &&
-					blankchar(p[0]&0377) ||
-				p < upper-4 && l == 0 &&
+				(p < upper-1 && p[1] == '\n' &&
+					blankchar(p[0]&0377)) ||
+				(p < upper-4 && l == 0 &&
 					p[0] == 'F' && p[1] == 'r' &&
-					p[2] == 'o' && p[3] == 'm' ||
-				*p == '.' && l == 0 && p < upper-1 &&
-					p[1] == '\n') {
+					p[2] == 'o' && p[3] == 'm') ||
+				(*p == '.' && l == 0 && p < upper-1 &&
+					p[1] == '\n')) {
 			if (l >= 69) {
 				sz += 2;
 				fwrite("=\n", sizeof (char), 2, fo);
@@ -1033,8 +1033,8 @@ mime_str_toqp(struct str *in, struct str *out, int (*mustquote)(int), int inhdr)
 	out->l = in->l;
 	upper = in->s + in->l;
 	for (p = in->s; p < upper; p++) {
-		if (mustquote(*p&0377) || p+1 < upper && *(p + 1) == '\n' &&
-				blankchar(*p & 0377)) {
+		if (mustquote(*p&0377) || (p+1 < upper && *(p + 1) == '\n' &&
+				blankchar(*p & 0377))) {
 			if (inhdr && *p == ' ') {
 				*q++ = '_';
 			} else {
@@ -1344,8 +1344,8 @@ mime_write_tohdr(struct str *in, FILE *fo)
 							wbeg == &upper[-1]))
 					mustquote++;
 			}
-			if (mustquote || broken || (wend - wbeg) >= 74 &&
-					quoteany) {
+			if (mustquote || broken || ((wend - wbeg) >= 74 &&
+					quoteany)) {
 				for (;;) {
 					cin.s = lastwordend ? lastwordend :
 						wbeg;

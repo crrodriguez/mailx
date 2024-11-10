@@ -345,11 +345,11 @@ putdb(void)
 	void	*zp;
 	int	scomp, ncomp;
 
-	if (!super_mmapped && (sfp = dbfp(SUPER, O_WRONLY, &scomp, &sname))
-			== NULL || sfp == (FILE *)-1)
+	if ((!super_mmapped && (sfp = dbfp(SUPER, O_WRONLY, &scomp, &sname))
+			== NULL) || sfp == (FILE *)-1)
 		return;
-	if (!nodes_mmapped && (nfp = dbfp(NODES, O_WRONLY, &ncomp, &nname))
-			== NULL || nfp == (FILE *)-1)
+	if ((!nodes_mmapped && (nfp = dbfp(NODES, O_WRONLY, &ncomp, &nname))
+			== NULL) || nfp == (FILE *)-1)
 		return;
 	if (super_mmapped == 0 || nodes_mmapped == 0)
 		holdint();
@@ -696,8 +696,8 @@ loop:	*stop = 0;
 			}
 			SAVE(c)
 		} else if (constituent(c, *buf, i+j, sp->price, sp->hadamp) ||
-				sp->loc == HEADER && c == '.' &&
-				asccasecmp(sp->field, "subject*")) {
+				(sp->loc == HEADER && c == '.' &&
+				 asccasecmp(sp->field, "subject*"))) {
 			if (c == '&')
 				sp->hadamp = 1;
 			SAVE(c)
@@ -775,9 +775,9 @@ out:	if (i > 0) {
 				 ascncasecmp(sp->field, "x-spam", 6) == 0 ||
 				 ascncasecmp(sp->field, "x-pstn", 6) == 0 ||
 				 ascncasecmp(sp->field, "x-scanned", 9) == 0 ||
-				 asccasecmp(sp->field, "received*") == 0 &&
+				 (asccasecmp(sp->field, "received*") == 0 &&
 				 	((2*c > i) || i < 4 ||
-					asccasestr(*buf, "localhost") != NULL)))
+					asccasestr(*buf, "localhost") != NULL))))
 			goto loop;
 		return *buf;
 	}
@@ -816,14 +816,14 @@ add(const char *word, enum entry entry, struct lexstat *sp, int incr)
 		switch (entry) {
 		case GOOD:
 			c = get(&n[OF_node_good]);
-			if (incr>0 && c<MAX3-incr || incr<0 && c>=-incr) {
+			if ((incr>0 && c<MAX3-incr) || (incr<0 && c>=-incr)) {
 				c += incr;
 				put(&n[OF_node_good], c);
 			}
 			break;
 		case BAD:
 			c = get(&n[OF_node_bad]);
-			if (incr>0 && c<MAX3-incr || incr<0 && c>=-incr) {
+			if ((incr>0 && c<MAX3-incr) || (incr<0 && c>=-incr)) {
 				c += incr;
 				put(&n[OF_node_bad], c);
 			}
@@ -958,7 +958,7 @@ insert(int *msgvec, enum entry entry, int incr)
 			break;
 		}
 		u += incr;
-		if (entry == GOOD && incr > 0 || entry == BAD && incr < 0)
+		if ((entry == GOOD && incr > 0) || (entry == BAD && incr < 0))
 			message[*ip-1].m_flag &= ~MJUNK;
 		else
 			message[*ip-1].m_flag |= MJUNK;
@@ -1109,10 +1109,10 @@ rate(const char *word, enum entry entry, struct lexstat *sp, int unused)
 			 * gives the most interesting verbose output.
 			 */
 			if (d > best[i].dist ||
-					d == best[i].dist &&
-						p < best[i].prob ||
-					best[i].loc == HEADER &&
-						d == best[i].dist) {
+					(d == best[i].dist &&
+						p < best[i].prob) ||
+					(best[i].loc == HEADER &&
+						d == best[i].dist)) {
 				for (j = BEST-2; j >= i; j--)
 					best[j+1] = best[j];
 				best[i].dist = d;

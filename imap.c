@@ -1868,11 +1868,11 @@ imap_update(struct mailbox *mp)
 			stored++;
 			gotcha++;
 		} else if (mp->mb_type != MB_CACHE ||
-			!edit && (!(m->m_flag&(MBOXED|MSAVED|MDELETED))
+			(!edit && (!(m->m_flag&(MBOXED|MSAVED|MDELETED))
 				|| (m->m_flag &
 					(MBOXED|MPRESERVE|MTOUCH)) ==
-					(MPRESERVE|MTOUCH)) ||
-				edit && !(m->m_flag & MDELETED))
+					(MPRESERVE|MTOUCH))) ||
+				(edit && !(m->m_flag & MDELETED)))
 			held++;
 		if (m->m_flag & MNEW) {
 			m->m_flag &= ~MNEW;
@@ -2779,7 +2779,7 @@ imap_appenduid(struct mailbox *mp, FILE *fp, time_t t, long off1,
 	xmb.mb_otf = xmb.mb_itf = fp;
 	initcache(&xmb);
 	memset(&xm, 0, sizeof xm);
-	xm.m_flag = flag&MREAD | MNEW;
+	xm.m_flag = (flag&MREAD) | MNEW;
 	xm.m_time = t;
 	xm.m_block = mailx_blockof(off1);
 	xm.m_offset = mailx_offsetof(off1);

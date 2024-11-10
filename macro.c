@@ -195,7 +195,7 @@ ccall(void *v)
 	char	**args = v;
 	struct macro	*mp;
 
-	if (args[0] == NULL || args[1] != NULL && args[2] != NULL) {
+	if (args[0] == NULL || (args[1] != NULL && args[2] != NULL)) {
 		fprintf(stderr, "Syntax is: call <name>\n");
 		return 1;
 	}

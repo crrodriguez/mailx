@@ -599,8 +599,8 @@ getfold(char *name, int size)
 
 	if ((folder = value("folder")) == NULL)
 		return (-1);
-	if (*folder == '/' || (p = which_protocol(folder)) != PROTO_FILE &&
-			p != PROTO_MAILDIR) {
+	if (*folder == '/' || ((p = which_protocol(folder)) != PROTO_FILE &&
+			p != PROTO_MAILDIR)) {
 		strncpy(name, folder, size);
 		name[size-1]='\0';
 	} else {

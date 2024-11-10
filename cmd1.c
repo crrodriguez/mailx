@@ -111,14 +111,14 @@ headers(void *v)
 					lastg = g;
 					lastmq = mq;
 				}
-				if (n>0 && mp==&message[n-1] ||
-						n==0 && g==k ||
-						n==-2 && g==k+size && lastmq ||
-						n<0 && g>=k && mp->m_flag&fl)
+				if ((n>0 && mp==&message[n-1]) ||
+						(n==0 && g==k) ||
+						(n==-2 && g==k+size && lastmq) ||
+						(n<0 && g>=k && mp->m_flag&fl))
 					break;
 				g++;
 			}
-		if (lastmq && (n==-2 || n==-1 && mp==&message[msgCount])) {
+		if (lastmq && (n==-2 || (n==-1 && mp==&message[msgCount]))) {
 			g = lastg;
 			mq = lastmq;
 		}
@@ -154,14 +154,14 @@ headers(void *v)
 					lastg = g;
 					lastmq = mq;
 				}
-				if (n>0 && mp==&message[n-1] ||
-						n==0 && g==k ||
-						n==-2 && g==k+size && lastmq ||
-						n<0 && g>=k && mp->m_flag&fl)
+				if ((n>0 && mp==&message[n-1]) ||
+						(n==0 && g==k) ||
+						(n==-2 && g==k+size && lastmq) ||
+						(n<0 && g>=k && mp->m_flag&fl))
 					break;
 				g++;
 			}
-		if (lastmq && (n==-2 || n==-1 && mp==&message[msgCount])) {
+		if (lastmq && (n==-2 || (n==-1 && mp==&message[msgCount]))) {
 			g = lastg;
 			mq = lastmq;
 		}

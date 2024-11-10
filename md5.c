@@ -69,42 +69,42 @@ static unsigned char PADDING[64] = {
 /*
  * F, G, H and I are basic MD5 functions.
  */
-#define	F(x, y, z)	((x) & (y) | ~(x) & (z))
-#define	G(x, y, z)	((x) & (z) | (y) & ~(z))
+#define	F(x, y, z)	(((x) & (y)) | (~(x) & (z)))
+#define	G(x, y, z)	(((x) & (z)) | ((y) & ~(z)))
 #define	H(x, y, z)	((x) ^ (y) ^ (z))
-#define	I(x, y, z)	((y) ^ ((x) | ~(z)&0xffffffff))
+#define	I(x, y, z)	((y) ^ ((x) | (~(z)&0xffffffff)))
 
 /*
  * ROTATE_LEFT rotates x left n bits.
  */
-#define	ROTATE_LEFT(x, n)	((x)<<(n) & 0xffffffff | (x) >> 32-(n))
+#define	ROTATE_LEFT(x, n)	(((x)<<(n) & 0xffffffff) | (x) >> (32-(n)))
 
 /*
  * FF, GG, HH, and II transformations for rounds 1, 2, 3, and 4.
  * Rotation is separate from addition to prevent recomputation.
  */
 #define FF(a, b, c, d, x, s, ac) { \
-	(a) = (a) + F((b), (c), (d)) + (x) + ((ac)&0xffffffff) & 0xffffffff; \
+	(a) = ((a) + F((b), (c), (d)) + (x) + ((ac)&0xffffffff)) & 0xffffffff; \
 	(a) = ROTATE_LEFT((a), (s)); \
-	(a) = (a) + (b) & 0xffffffff; \
+	(a) = ((a) + (b)) & 0xffffffff; \
 }
 
 #define GG(a, b, c, d, x, s, ac) { \
-	(a) = (a) + G((b), (c), (d)) + (x) + ((ac)&0xffffffff) & 0xffffffff; \
+	(a) = ((a) + G((b), (c), (d)) + (x) + ((ac)&0xffffffff)) & 0xffffffff; \
 	(a) = ROTATE_LEFT((a), (s)); \
-	(a) = (a) + (b) & 0xffffffff; \
+	(a) = ((a) + (b)) & 0xffffffff; \
 }
 
 #define HH(a, b, c, d, x, s, ac) { \
-	(a) = (a) + H((b), (c), (d)) + (x) + ((ac)&0xffffffff) & 0xffffffff; \
+	(a) = ((a) + H((b), (c), (d)) + (x) + ((ac)&0xffffffff)) & 0xffffffff; \
 	(a) = ROTATE_LEFT((a), (s)); \
-	(a) = (a) + (b) & 0xffffffff; \
+	(a) = ((a) + (b)) & 0xffffffff; \
 }
 
 #define II(a, b, c, d, x, s, ac) { \
-	(a) = (a) + I((b), (c), (d)) + (x) + ((ac)&0xffffffff) & 0xffffffff; \
+	(a) = ((a) + I((b), (c), (d)) + (x) + ((ac)&0xffffffff)) & 0xffffffff; \
 	(a) = ROTATE_LEFT((a), (s)); \
-	(a) = (a) + (b) & 0xffffffff; \
+	(a) = ((a) + (b)) & 0xffffffff; \
 }
 
 /*
@@ -143,10 +143,10 @@ MD5Update (
 	index = context->count[0]>>3 & 0x3F;
 
 	/* Update number of bits */
-	if ((context->count[0] = context->count[0] + (inputLen<<3) & 0xffffffff)
+	if ((context->count[0] = (context->count[0] + (inputLen<<3)) & 0xffffffff)
 			< (inputLen<<3 & 0xffffffff))
-	context->count[1] = context->count[1] + 1 & 0xffffffff;
-	context->count[1] = context->count[1] + (inputLen>>29) & 0xffffffff;
+	context->count[1] = (context->count[1] + 1) & 0xffffffff;
+	context->count[1] = (context->count[1] + (inputLen>>29)) & 0xffffffff;
 
 	partLen = 64 - index;
 
@@ -284,10 +284,10 @@ MD5Transform(md5_type state[4], unsigned char block[64])
 	II(c, d, a, b, x[ 2], S43, 0x2ad7d2bb); /* 63 */
 	II(b, c, d, a, x[ 9], S44, 0xeb86d391); /* 64 */
 
-	state[0] = state[0] + a & 0xffffffff;
-	state[1] = state[1] + b & 0xffffffff;
-	state[2] = state[2] + c & 0xffffffff;
-	state[3] = state[3] + d & 0xffffffff;
+	state[0] = (state[0] + a) & 0xffffffff;
+	state[1] = (state[1] + b) & 0xffffffff;
+	state[2] = (state[2] + c) & 0xffffffff;
+	state[3] = (state[3] + d) & 0xffffffff;
 
 	/*
 	 * Zeroize sensitive information.

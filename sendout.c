@@ -1371,10 +1371,10 @@ fmt(char *str, struct name *np, FILE *fo, int flags, int dropinvalid,
 	if (col) {
 		fwrite(str, sizeof *str, strlen(str), fo);
 		if ((flags&GFILES) == 0 &&
-				col == 3 && asccasecmp(str, "to:") == 0 ||
-				col == 3 && asccasecmp(str, "cc:") == 0 ||
-				col == 4 && asccasecmp(str, "bcc:") == 0 ||
-				col == 10 && asccasecmp(str, "Resent-To:") == 0)
+				((col == 3 && asccasecmp(str, "to:") == 0) ||
+				 (col == 3 && asccasecmp(str, "cc:") == 0) ||
+				 (col == 4 && asccasecmp(str, "bcc:") == 0) ||
+				 (col == 10 && asccasecmp(str, "Resent-To:") == 0)))
 			is_to = 1;
 	}
 	for (; np != NULL; np = np->n_flink) {

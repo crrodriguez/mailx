@@ -408,7 +408,7 @@ enum gfield {
 #define	GMASK	(GTO|GSUBJECT|GCC|GBCC|GREPLYTO)	/* Mask of places from whence */
 
 #define	visible(mp)	(((mp)->m_flag&(MDELETED|MHIDDEN|MKILL))==0|| \
-				dot==(mp) && (mp)->m_flag&MKILL)
+				(dot==(mp) && (mp)->m_flag&MKILL))
 
 /*
  * Structure used to pass about the current

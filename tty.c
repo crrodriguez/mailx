@@ -437,6 +437,6 @@ yorn(char *msg)
 	do
 		cp = readtty(msg, NULL);
 	while (cp == NULL ||
-		*cp != 'y' && *cp != 'Y' && *cp != 'n' && *cp != 'N');
+		(*cp != 'y' && *cp != 'Y' && *cp != 'n' && *cp != 'N'));
 	return *cp == 'y' || *cp == 'Y';
 }
