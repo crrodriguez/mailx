@@ -85,7 +85,7 @@ salloc(size_t size)
 		panic(catgets(catd, CATSET, 195, "String too large"));
 	if (sp->s_topFree == NULL) {
 		string_index = sp - &stringdope[0];
-		sp->s_topFree = smalloc(STRINGSIZE << string_index);
+		sp->s_topFree = g_malloc(STRINGSIZE << string_index);
 		sp->s_nextFree = sp->s_topFree;
 		sp->s_nleft = STRINGSIZE << string_index;
 	}

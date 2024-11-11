@@ -88,8 +88,8 @@ nodename(int mayoverride)
 #endif	/* HAVE_SOCKETS */
 
 	if (mayoverride && (hn = value("hostname")) != NULL && *hn) {
-		free(hostname);
-		hostname = sstrdup(hn);
+		g_free(hostname);
+		hostname = g_strdup(hn);
 	}
 	if (hostname == NULL) {
 		uname(&ut);
@@ -113,7 +113,7 @@ nodename(int mayoverride)
 		}
 #endif	/* !HAVE_IPv6_FUNCS */
 #endif	/* HAVE_SOCKETS */
-		hostname = smalloc(strlen(hn) + 1);
+		hostname = g_malloc(strlen(hn) + 1);
 		strcpy(hostname, hn);
 	}
 	return hostname;
@@ -146,7 +146,7 @@ myaddrs(struct header *hp)
 	if (addr == NULL) {
 		hn = nodename(1);
 		sz = strlen(myname) + strlen(hn) + 2;
-		addr = smalloc(sz);
+		addr = g_malloc(sz);
 		snprintf(addr, sz, "%s@%s", myname, hn);
 	}
 	return addr;
@@ -234,7 +234,7 @@ read_smtp(struct sock *sp, int value, int ign_eof)
 				if ((y = read_smtp(sp, x, ign_eof)) != (x) && \
 					(!(ign_eof) || y != -1)) { \
 					if (b != NULL) \
-						free(b); \
+						g_free(b); \
 					return 1; \
 				} \
 			}
@@ -315,12 +315,12 @@ talk_smtp(struct name *to, FILE *fi, struct sock *sp,
 			SMTP_ANSWER(3);
 			b64 = strtob64(user);
 			snprintf(o, sizeof o, "%s\r\n", b64);
-			free(b64);
+			g_free(b64);
 			SMTP_OUT(o);
 			SMTP_ANSWER(3);
 			b64 = strtob64(password);
 			snprintf(o, sizeof o, "%s\r\n", b64);
-			free(b64);
+			g_free(b64);
 			SMTP_OUT(o);
 			SMTP_ANSWER(2);
 			break;
@@ -401,7 +401,7 @@ talk_smtp(struct name *to, FILE *fi, struct sock *sp,
 	SMTP_OUT("QUIT\r\n");
 	_SMTP_ANSWER(2, 1);
 	if (b != NULL)
-		free(b);
+		g_free(b);
 	return 0;
 }
 
@@ -455,7 +455,7 @@ smtp_mta(char *server, struct name *to, FILE *fi, struct header *hp,
 	if (!debug && !_debug)
 		sclose(&so);
 	if (smtpbuf) {
-		free(smtpbuf);
+		g_free(smtpbuf);
 		smtpbuf = NULL;
 		smtpbufsize = 0;
 	}

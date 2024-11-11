@@ -183,7 +183,7 @@ add_to_namelist(char ***namelist, size_t *nmlsize, char **np, char *string)
 	size_t idx;
 
 	if ((idx = np - *namelist) >= *nmlsize) {
-		*namelist = srealloc(*namelist, (*nmlsize += 8) * sizeof *np);
+		*namelist = g_realloc_n(*namelist, (*nmlsize += 8),  sizeof *np);
 		np = &(*namelist)[idx];
 	}
 	*np++ = string;
@@ -218,7 +218,7 @@ markall(char *buf, int f)
 	}
 	bufp = buf;
 	mc = 0;
-	namelist = smalloc((nmlsize = 8) * sizeof *namelist);
+	namelist = g_malloc_n((nmlsize = 8), sizeof *namelist);
 	np = &namelist[0];
 	scaninit();
 	tok = scan(&bufp);
@@ -555,7 +555,7 @@ number:
 	}
 	markall_ret(0)
 out:
-	free(namelist);
+	g_free(namelist);
 	return retval;
 }
 
@@ -1044,7 +1044,7 @@ matchsubj(char *str, int mesg)
 	in.l = strlen(cp2);
 	mime_fromhdr(&in, &out, TD_ICONV);
 	i = substr(out.s, cp);
-	free(out.s);
+	g_free(out.s);
 	return i;
 }
 

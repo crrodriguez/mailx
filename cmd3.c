@@ -86,7 +86,7 @@ shell(void *v)
 	char *cmd;
 	size_t cmdsize;
 
-	cmd = smalloc(cmdsize = strlen(str) + 1);
+	cmd = g_malloc(cmdsize = strlen(str) + 1);
 	strcpy(cmd, str);
 	if (bangexp(&cmd, &cmdsize) < 0)
 		return 1;
@@ -95,7 +95,7 @@ shell(void *v)
 	run_command(shell, 0, -1, -1, "-c", cmd, NULL);
 	safe_signal(SIGINT, sigint);
 	printf("!\n");
-	free(cmd);
+	g_free(cmd);
 	return 0;
 }
 
@@ -133,13 +133,13 @@ bangexp(char **str, size_t *size)
 	int dobang = value("bang") != NULL;
 	size_t sz, i, j, bangbufsize;
 
-	bangbuf = smalloc(bangbufsize = *size);
+	bangbuf = g_malloc(bangbufsize = *size);
 	i = j = 0;
 	while ((*str)[i]) {
 		if (dobang) {
 			if ((*str)[i] == '!') {
 				sz = strlen(lastbang);
-				bangbuf = srealloc(bangbuf, bangbufsize += sz);
+				bangbuf = g_realloc(bangbuf, bangbufsize += sz);
 				changed++;
 				strcpy(&bangbuf[j], lastbang);
 				j += sz;
@@ -161,12 +161,12 @@ bangexp(char **str, size_t *size)
 	}
 	sz = j;
 	if (sz >= *size)
-		*str = srealloc(*str, *size = sz + 1);
+		*str = g_realloc(*str, *size = sz + 1);
 	strcpy(*str, bangbuf);
 	if (sz >= lastbangsize)
-		lastbang = srealloc(lastbang, lastbangsize = sz + 1);
+		lastbang = g_realloc(lastbang, lastbangsize = sz + 1);
 	strcpy(lastbang, bangbuf);
-	free(bangbuf);
+	g_free(bangbuf);
 	return(0);
 }
 
@@ -477,7 +477,7 @@ fwdedit(char *subj)
 	newsubj = salloc(strlen(out.s) + 6);
 	strcpy(newsubj, "Fwd: ");
 	strcpy(&newsubj[5], out.s);
-	free(out.s);
+	g_free(out.s);
 	return newsubj;
 }
 
@@ -756,7 +756,7 @@ group(void *v)
 	gname = *argv;
 	h = hash(gname);
 	if ((gh = findgroup(gname)) == NULL) {
-		gh = (struct grouphead *)scalloc(1, sizeof *gh);
+		gh = (struct grouphead *)g_malloc0_n(1, sizeof *gh);
 		gh->g_name = vcopy(gname);
 		gh->g_list = NULL;
 		gh->g_link = groups[h];
@@ -770,7 +770,7 @@ group(void *v)
 	 */
 
 	for (ap = argv+1; *ap != NULL; ap++) {
-		gp = (struct group *)scalloc(1, sizeof *gp);
+		gp = (struct group *)g_malloc0_n(1, sizeof *gp);
 		gp->ge_name = vcopy(*ap);
 		gp->ge_link = gh->g_list;
 		gh->g_list = gp;
@@ -1099,10 +1099,10 @@ alternates(void *v)
 		return(0);
 	}
 	if (altnames != 0)
-		free(altnames);
-	altnames = scalloc(c, sizeof (char *));
+		g_free(altnames);
+	altnames = g_malloc0_n(c, sizeof (char *));
 	for (ap = namelist, ap2 = altnames; *ap; ap++, ap2++) {
-		cp = scalloc(strlen(*ap) + 1, sizeof (char));
+		cp = g_malloc0_n(strlen(*ap) + 1, sizeof (char));
 		strcpy(cp, *ap);
 		*ap2 = cp;
 	}
@@ -1222,12 +1222,12 @@ shortcut(void *v)
 		return 1;
 	}
 	if ((s = get_shortcut(args[0])) != NULL) {
-		free(s->sh_long);
-		s->sh_long = sstrdup(args[1]);
+		g_free(s->sh_long);
+		s->sh_long = g_strdup(args[1]);
 	} else {
-		s = scalloc(1, sizeof *s);
-		s->sh_short = sstrdup(args[0]);
-		s->sh_long = sstrdup(args[1]);
+		s = g_malloc0_n(1, sizeof *s);
+		s->sh_short = g_strdup(args[0]);
+		s->sh_long = g_strdup(args[1]);
 		s->sh_next = shortcuts;
 		shortcuts = s;
 	}
@@ -1252,13 +1252,13 @@ delete_shortcut(const char *str)
 
 	for (sp = shortcuts, sq = NULL; sp; sq = sp, sp = sp->sh_next) {
 		if (strcmp(sp->sh_short, str) == 0) {
-			free(sp->sh_short);
-			free(sp->sh_long);
+			g_free(sp->sh_short);
+			g_free(sp->sh_long);
 			if (sq)
 				sq->sh_next = sp->sh_next;
 			if (sp == shortcuts)
 				shortcuts = sp->sh_next;
-			free(sp);
+			g_free(sp);
 			return OKAY;
 		}
 	}
@@ -1349,7 +1349,7 @@ account(void *v)
 	oqf = savequitflags();
 	if ((a = get_oldaccount(args[0])) == NULL) {
 		if (args[1]) {
-			a = scalloc(1, sizeof *a);
+			a = g_malloc0_n(1, sizeof *a);
 			a->ac_next = oldaccounts;
 			oldaccounts = a;
 		} else {
@@ -1361,11 +1361,11 @@ account(void *v)
 	}
 	if (args[1]) {
 		delaccount(args[0]);
-		a->ac_name = sstrdup(args[0]);
+		a->ac_name = g_strdup(args[0]);
 		for (i = 1; args[i]; i++);
-		a->ac_vars = scalloc(i, sizeof *a->ac_vars);
+		a->ac_vars = g_malloc0_n(i, sizeof *a->ac_vars);
 		for (i = 0; args[i+1]; i++)
-			a->ac_vars[i] = sstrdup(args[i+1]);
+			a->ac_vars[i] = g_strdup(args[i+1]);
 	} else {
 		unset_allow_undefined = 1;
 		set(a->ac_vars);

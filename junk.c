@@ -268,7 +268,7 @@ getdb(int rw)
 		}
 	}
 	super_mmapped = 0;
-	super = smalloc(SIZEOF_super);
+	super = g_malloc(SIZEOF_super);
 	if (sfp) {
 		if (compressed)
 			zp = zalloc(sfp);
@@ -311,7 +311,7 @@ skip:	if ((n = getn(&super[OF_super_size])) == 0) {
 		}
 	}
 	nodes_mmapped = 0;
-	nodes = smalloc(n * SIZEOF_node);
+	nodes = g_malloc_n(n, SIZEOF_node);
 	if (sfp && nfp) {
 		if (compressed)
 			zp = zalloc(nfp);
@@ -387,12 +387,12 @@ relsedb(void)
 		munmap(super, super_mmapped);
 		super_mmapped = 0;
 	} else
-		free(super);
+		g_free(super);
 	if (nodes_mmapped) {
 		munmap(nodes, nodes_mmapped);
 		nodes_mmapped = 0;
 	} else
-		free(nodes);
+		g_free(nodes);
 	if (sfp && sfp != (FILE *)-1) {
 		Fclose(sfp);
 		sfp = NULL;
@@ -545,7 +545,7 @@ grow(unsigned long size)
 		}
 		nodes_mmapped = newsize*SIZEOF_node;
 	} else {
-		nodes = srealloc(nodes, newsize*SIZEOF_node);
+		nodes = g_realloc(nodes, newsize*SIZEOF_node);
 		memset(&nodes[size*SIZEOF_node], 0, incr*SIZEOF_node);
 	}
 	size = newsize;
@@ -555,7 +555,7 @@ grow(unsigned long size)
 
 #define	SAVE(c)	{ \
 	if (i+j >= (long)*bufsize-4) \
-		*buf = srealloc(*buf, *bufsize += 32); \
+		*buf = g_realloc(*buf, *bufsize += 32); \
 	(*buf)[j+i] = (c); \
 	i += (*buf)[j+i] != '\0'; \
 }
@@ -575,7 +575,7 @@ loop:	*stop = 0;
 			SAVE(*cp&0377)
 		}
 		SAVE('\0')
-		free(sp->save);
+		g_free(sp->save);
 		sp->save = NULL;
 		goto out;
 	}
@@ -681,7 +681,7 @@ loop:	*stop = 0;
 		if (sp->url) {
 			if (!url_xchar(c)) {
 				sp->url = 0;
-				cp = sp->save = smalloc(i+6);
+				cp = sp->save = g_malloc(i+6);
 				for (cq = "HOST*"; *cq; cq++)
 					*cp++ = *cq;
 				for (cq = &(*buf)[j]; *cq != ':'; cq++);
@@ -785,7 +785,7 @@ out:	if (i > 0) {
 }
 
 #define	JOINCHECK	if (i >= *bufsize) \
-				*buf = srealloc(*buf, *bufsize += 32)
+				*buf = g_realloc(*buf, *bufsize += 32)
 static void
 join(char **buf, size_t *bufsize, const char *s1, const char *s2)
 {
@@ -855,7 +855,7 @@ scan(struct message *m, enum entry entry,
 	}
 	fflush(fp);
 	rewind(fp);
-	sp = scalloc(1, sizeof *sp);
+	sp = g_malloc0_n(1, sizeof *sp);
 	count = fsize(fp);
 	bp = &buf0;
 	zp = &bufsize0;
@@ -868,10 +868,10 @@ scan(struct message *m, enum entry entry,
 		bp = bp == &buf1 ? &buf0 : &buf1;
 		zp = zp == &bufsize1 ? &bufsize0 : &bufsize1;
 	}
-	free(buf0);
-	free(buf1);
-	free(buf2);
-	free(sp);
+	g_free(buf0);
+	g_free(buf1);
+	g_free(buf2);
+	g_free(sp);
 	Fclose(fp);
 	return OKAY;
 }

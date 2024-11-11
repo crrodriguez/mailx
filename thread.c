@@ -247,7 +247,7 @@ interlink(struct message *m, long count, int newmail)
 	int	autocollapse = !newmail && !(inhook&2) &&
 			value("autocollapse") != NULL;
 
-	ms = smalloc(sizeof *ms * count);
+	ms = g_malloc(sizeof *ms * count);
 	for (n = 0, i = 0; i < count; i++) {
 		if (m[i].m_parent == NULL) {
 			if (autocollapse)
@@ -266,7 +266,7 @@ interlink(struct message *m, long count, int newmail)
 		}
 	} else
 		root = &m[0];
-	free(ms);
+	g_free(ms);
 	return root;
 }
 
@@ -368,7 +368,7 @@ makethreads(struct message *m, long count, int newmail)
 	if (count == 0)
 		return;
 	mprime = nextprime(count);
-	mt = scalloc(mprime, sizeof *mt);
+	mt = g_malloc0_n(mprime, sizeof *mt);
 	for (i = 0; i < count; i++) {
 		if ((m[i].m_flag&MHIDDEN) == 0) {
 			mlook(NULL, mt, &m[i], mprime);
@@ -396,32 +396,32 @@ makethreads(struct message *m, long count, int newmail)
 		lookup(&m[i], mt, mprime);
 	threadroot = interlink(m, count, newmail);
 	finalize(threadroot);
-	free(mt);
+	g_free(mt);
 	mb.mb_threaded = 1;
 }
 
-int 
+int
 thread(void *vp)
 {
 	if (mb.mb_threaded != 1 || vp == NULL || vp == (void *)-1) {
 		if (mb.mb_type == MB_IMAP)
 			imap_getheaders(1, msgCount);
 		makethreads(message, msgCount, vp == (void *)-1);
-		free(mb.mb_sorted);
-		mb.mb_sorted = sstrdup("thread");
+		g_free(mb.mb_sorted);
+		mb.mb_sorted = g_strdup("thread");
 	}
 	if (vp && vp != (void *)-1 && !inhook && value("header"))
 		return headers(vp);
 	return 0;
 }
 
-int 
+int
 unthread(void *vp)
 {
 	struct message	*m;
 
 	mb.mb_threaded = 0;
-	free(mb.mb_sorted);
+	g_free(mb.mb_sorted);
 	mb.mb_sorted = NULL;
 	for (m = &message[0]; m < &message[msgCount]; m++)
 		m->m_collapsed = 0;
@@ -548,8 +548,8 @@ sort(void *vp)
 	}
 	method = methnames[i].me_method;
 	func = methnames[i].me_func;
-	free(mb.mb_sorted);
-	mb.mb_sorted = sstrdup(args[0]);
+	g_free(mb.mb_sorted);
+	mb.mb_sorted = g_strdup(args[0]);
 	if (method == SORT_THREAD)
 		return thread(vp && vp != (void *)-1 ? msgvec : vp);
 	ms = ac_alloc(sizeof *ms * msgCount);
@@ -614,7 +614,7 @@ sort(void *vp)
 					mime_fromhdr(&in, &out, TD_ICONV);
 					ms[n].ms_u.ms_char =
 						savestr(skipre(out.s));
-					free(out.s);
+					g_free(out.s);
 					makelow(ms[n].ms_u.ms_char);
 				} else
 					ms[n].ms_u.ms_char = "";

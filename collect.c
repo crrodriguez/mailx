@@ -215,7 +215,7 @@ endpipe:
 		safe_signal(SIGPIPE, dflpipe);
 	}
 	if (lbuf)
-		free(lbuf);
+		g_free(lbuf);
 }
 
 static int
@@ -249,7 +249,7 @@ include_file(FILE *fbuf, char *name, int *linecount, int *charcount, int echo)
 		(*charcount) += linelen;
 	}
 	if (linebuf)
-		free(linebuf);
+		g_free(linebuf);
 	Fclose(fbuf);
 	return 0;
 }
@@ -612,7 +612,7 @@ cont:
 		 * No tilde escapes, interrupts not expected. Copy
 		 * standard input the simple way.
 		 */
-		linebuf = srealloc(linebuf, linesize = BUFSIZ);
+		linebuf = g_realloc(linebuf, linesize = BUFSIZ);
 		while ((count = fread(linebuf, sizeof *linebuf,
 						linesize, stdin)) > 0) {
 			if (fwrite(linebuf, sizeof *linebuf,

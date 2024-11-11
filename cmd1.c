@@ -593,9 +593,9 @@ hprf(const char *fmt, int mesg, FILE *f, int threaded, const char *attrlist)
 	}
 	putc('\n', f);
 	if (out.s)
-		free(out.s);
+		g_free(out.s);
 	if (headline)
-		free(headline);
+		g_free(headline);
 	if (pbuf)
 		ac_free(pbuf);
 }
@@ -1070,7 +1070,7 @@ top(void *v)
 		}
 	}
 	if (linebuf)
-		free(linebuf);
+		g_free(linebuf);
 	return(0);
 }
 

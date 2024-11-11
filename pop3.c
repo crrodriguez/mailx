@@ -505,7 +505,7 @@ pop3_setptr(struct mailbox *mp)
 {
 	int i;
 
-	message = scalloc(msgCount + 1, sizeof *message);
+	message = g_malloc0_n(msgCount + 1, sizeof *message);
 	for (i = 0; i < msgCount; i++)
 		pop3_init(mp, i);
 	setdot(message);
@@ -766,7 +766,7 @@ retry:	switch (need) {
 		break;
 	}
 	if (line)
-		free(line);
+		g_free(line);
 	if (saveint != SIG_IGN)
 		safe_signal(SIGINT, saveint);
 	if (savepipe != SIG_IGN)

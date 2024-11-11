@@ -146,7 +146,7 @@ edit1(int *msgvec, int type)
 		safe_signal(SIGINT, sigint);
 	}
 	if (line)
-		free(line);
+		g_free(line);
 	return 0;
 }
 

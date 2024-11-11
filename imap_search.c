@@ -178,8 +178,8 @@ imap_search(const char *spec, int f)
 	int	i;
 
 	if (strcmp(spec, "()")) {
-		free(lastspec);
-		lastspec = sstrdup(spec);
+		g_free(lastspec);
+		lastspec = g_strdup(spec);
 	} else if (lastspec == NULL) {
 		fprintf(stderr, "No last SEARCH criteria available.\n");
 		return STOP;
@@ -483,7 +483,7 @@ itexecute(struct mailbox *mp, struct message *m, int c, struct itnode *n)
 				(ibuf = setinput(mp, m, NEED_HEADER)) != NULL) {
 			if (readline(ibuf, &line, &linesize) > 0)
 				m->m_time = unixtime(line);
-			free(line);
+			g_free(line);
 		}
 		break;
 	case ITSENTBEFORE:
@@ -590,7 +590,7 @@ matchfield(struct message *m, const char *field, const char *what)
 	mime_fromhdr(&in, &out, TD_ICONV);
 	what = imap_unquotestr(what);
 	i = substr(out.s, what);
-	free(out.s);
+	g_free(out.s);
 	return i;
 }
 
@@ -675,7 +675,7 @@ mkenvelope(struct name *np)
 done:	*rp = '\0';
 	if (hadphrase)
 		realname = ip;
-	free(out.s);
+	g_free(out.s);
 	localpart = savestr(np->n_name);
 	if ((cp = strrchr(localpart, '@')) != NULL) {
 		*cp = '\0';
@@ -708,7 +708,7 @@ matchmsg(struct message *m, const char *what, int withheader)
 	fflush(fp);
 	rewind(fp);
 	count = fsize(fp);
-	line = smalloc(linesize = LINESIZE);
+	line = g_malloc(linesize = LINESIZE);
 	linelen = 0;
 	if (!withheader)
 		while (fgetline(&line, &linesize, &count, &linelen, fp, 0))
@@ -721,7 +721,7 @@ matchmsg(struct message *m, const char *what, int withheader)
 			break;
 		}
 out:
-	free(line);
+	g_free(line);
 	Fclose(fp);
 	return yes;
 }

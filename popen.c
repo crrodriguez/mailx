@@ -363,14 +363,14 @@ register_file(FILE *fp, int omode, int pipe, int pid, int compressed,
 {
 	struct fp *fpp;
 
-	fpp = (struct fp*)smalloc(sizeof *fpp);
+	fpp = (struct fp*)g_malloc(sizeof *fpp);
 	fpp->fp = fp;
 	fpp->omode = omode;
 	fpp->pipe = pipe;
 	fpp->pid = pid;
 	fpp->link = fp_head;
 	fpp->compressed = compressed;
-	fpp->realfile = realfile ? sstrdup(realfile) : NULL;
+	fpp->realfile = realfile ? g_strdup(realfile) : NULL;
 	fpp->offset = offset;
 	fp_head = fpp;
 }
@@ -450,7 +450,7 @@ unregister_file(FILE *fp)
 			if ((p->compressed&FP_MASK) != FP_UNCOMPRESSED)
 				ok = compress(p);
 			*pp = p->link;
-			free(p);
+			g_free(p);
 			return ok;
 		}
 	panic(catgets(catd, CATSET, 153, "Invalid file pointer"));
@@ -561,9 +561,9 @@ findchild(int pid)
 	     cpp = &(*cpp)->link)
 			;
 	if (*cpp == (struct child *)NULL) {
-		*cpp = (struct child *) smalloc(sizeof (struct child));
+		*cpp = (struct child *) g_malloc(sizeof (struct child));
 		(*cpp)->pid = pid;
-		(*cpp)->done = (*cpp)->free = 0;
+		(*cpp)->done = (*cpp)->g_free = 0;
 		(*cpp)->link = (struct child *)NULL;
 	}
 	return *cpp;
@@ -577,7 +577,7 @@ delchild(struct child *cp)
 	for (cpp = &child; *cpp != cp; cpp = &(*cpp)->link)
 		;
 	*cpp = cp->link;
-	free(cp);
+	g_free(cp);
 }
 
 /*ARGSUSED*/

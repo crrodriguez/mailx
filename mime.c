@@ -269,7 +269,7 @@ getcharset(int isclean)
 				int c;
 				char *ptr;
 
-				ptr = charset = sstrdup(t);
+				ptr = charset = g_strdup(t);
 				while ((c = *ptr)) {
 					*ptr = lowerconv(c & 0377);
 					ptr++;
@@ -766,7 +766,7 @@ mime_type(char *ext, char *filename)
 	}
 	Fclose(f);
 	if (line)
-		free(line);
+		g_free(line);
 	return type;
 }
 
@@ -1024,12 +1024,12 @@ mime_write_toqp(struct str *in, FILE *fo, int (*mustquote)(int))
  * Write to a stringstruct converting to quoted-printable.
  * The mustquote function determines whether a character must be quoted.
  */
-static void 
+static void
 mime_str_toqp(struct str *in, struct str *out, int (*mustquote)(int), int inhdr)
 {
 	char *p, *q, *upper;
 
-	out->s = smalloc(in->l * 3 + 1);
+	out->s = g_malloc(in->l * 3 + 1);
 	q = out->s;
 	out->l = in->l;
 	upper = in->s + in->l;
@@ -1054,14 +1054,14 @@ mime_str_toqp(struct str *in, struct str *out, int (*mustquote)(int), int inhdr)
 /*
  * Write to a stringstruct converting from quoted-printable.
  */
-static void 
+static void
 mime_fromqp(struct str *in, struct str *out, int ishdr)
 {
 	char *p, *q, *upper;
 	char quote[4];
 
 	out->l = in->l;
-	out->s = smalloc(out->l + 1);
+	out->s = g_malloc(out->l + 1);
 	upper = in->s + in->l;
 	for (p = in->s, q = out->s; p < upper; p++) {
 		if (*p == '=') {
@@ -1093,7 +1093,7 @@ mime_fromqp(struct str *in, struct str *out, int ishdr)
 
 #define	mime_fromhdr_inc(inc) { \
 		size_t diff = q - out->s; \
-		out->s = srealloc(out->s, (maxstor += inc) + 1); \
+		out->s = g_realloc(out->s, (maxstor += inc) + 1); \
 		q = &(out->s)[diff]; \
 	}
 /*
@@ -1118,7 +1118,7 @@ mime_fromhdr(struct str *in, struct str *out, enum tdflags flags)
 		isclean |= (MIME_HIGHBIT|encflags);
 
 	maxstor = in->l;
-	out->s = smalloc(maxstor + 1);
+	out->s = g_malloc(maxstor + 1);
 	out->l = 0;
 	upper = in->s + in->l;
 	for (p = in->s, q = out->s; p < upper; p++) {
@@ -1215,7 +1215,7 @@ mime_fromhdr(struct str *in, struct str *out, enum tdflags flags)
 #ifdef	HAVE_ICONV
 			}
 #endif
-			free(cout.s);
+			g_free(cout.s);
 			lastwordend = q;
 			lastoutl = out->l;
 		} else {
@@ -1238,7 +1238,7 @@ fromhdr_end:
 		if ((isclean & MIME_LATIN) && ascncasecmp("iso-8859-", tcs, 9) == 0)
 			goto skip;
 		makeprint(out, &new);
-		free(out->s);
+		g_free(out->s);
 		*out = new;
 	}
 skip:
@@ -1369,7 +1369,7 @@ mime_write_tohdr(struct str *in, FILE *fo)
 								cout.l, fo);
 						fwrite("?=", 1, 2, fo);
 						sz += wr, col += wr;
-						free(cout.s);
+						g_free(cout.s);
 						break;
 					} else {
 						broken = 1;
@@ -1388,7 +1388,7 @@ mime_write_tohdr(struct str *in, FILE *fo)
 						} else {
 							wend -= 4;
 						}
-						free(cout.s);
+						g_free(cout.s);
 					}
 				}
 				lastwordend = wend;
@@ -1510,7 +1510,7 @@ mime_write_tohdr_a(struct str *in, FILE *f)
 static void
 addstr(char **buf, size_t *sz, size_t *pos, char *str, size_t len)
 {
-	*buf = srealloc(*buf, *sz += len);
+	*buf = g_realloc(*buf, *sz += len);
 	memcpy(&(*buf)[*pos], str, len);
 	*pos += len;
 }
@@ -1524,7 +1524,7 @@ addconv(char **buf, size_t *sz, size_t *pos, char *str, size_t len)
 	in.l = len;
 	mime_fromhdr(&in, &out, TD_ISPR|TD_ICONV);
 	addstr(buf, sz, pos, out.s, out.l);
-	free(out.s);
+	g_free(out.s);
 }
 
 /*
@@ -1569,7 +1569,7 @@ mime_fromaddr(char *name)
 		addstr(&res, &ressz, &rescur, lastcp, cp - lastcp);
 	res[rescur] = '\0';
 	cp = savestr(res);
-	free(res);
+	g_free(res);
 	return cp;
 }
 
@@ -1674,7 +1674,7 @@ fwrite_td(void *ptr, size_t size, size_t nmemb, FILE *f, enum tdflags flags,
 		csize = delctrl(mptr, csize);
 	sz = prefixwrite(mptr, sizeof *mptr, csize, f, prefix, prefixlen);
 	ac_free(xmptr);
-	free(mlptr);
+	g_free(mlptr);
 	return sz;
 }
 
@@ -1730,7 +1730,7 @@ mime_write(void *ptr, size_t size, FILE *f,
 		mime_fromqp(&in, &out, 0);
 		sz = fwrite_td(out.s, sizeof *out.s, out.l, f, dflags,
 				prefix, prefixlen);
-		free(out.s);
+		g_free(out.s);
 		break;
 	case CONV_TOQP:
 		sz = mime_write_toqp(&in, f, mustquote_body);
@@ -1752,7 +1752,7 @@ mime_write(void *ptr, size_t size, FILE *f,
 			sz = fwrite_td(out.s, sizeof *out.s, out.l, f, dflags,
 				prefix, prefixlen);
 		}
-		free(out.s);
+		g_free(out.s);
 		break;
 	case CONV_TOB64:
 		sz = mime_write_tob64(&in, f, 0);
@@ -1761,7 +1761,7 @@ mime_write(void *ptr, size_t size, FILE *f,
 		mime_fromhdr(&in, &out, TD_ISPR|TD_ICONV);
 		sz = fwrite_td(out.s, sizeof *out.s, out.l, f,
 				dflags&TD_DELCTRL, prefix, prefixlen);
-		free(out.s);
+		g_free(out.s);
 		break;
 	case CONV_TOHDR:
 		sz = mime_write_tohdr(&in, f);

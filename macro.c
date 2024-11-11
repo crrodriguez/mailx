@@ -108,8 +108,8 @@ define1(const char *name, int account)
 	char	*linebuf = NULL;
 	size_t	linesize = 0;
 	int	n;
-	mp = scalloc(1, sizeof *mp);
-	mp->ma_name = sstrdup(name);
+	mp = g_malloc0_n(1, sizeof *mp);
+	mp->ma_name = g_strdup(name);
 	if (account)
 		mp->ma_flags |= MA_ACCOUNT;
 	for (;;) {
@@ -128,15 +128,15 @@ define1(const char *name, int account)
 					mp->ma_name);
 			if (sourcing)
 				unstack();
-			free(mp->ma_name);
-			free(mp);
+			g_free(mp->ma_name);
+			g_free(mp);
 			return 1;
 		}
 		if (closingangle(linebuf))
 			break;
-		lp = scalloc(1, sizeof *lp);
+		lp = g_malloc0_n(1, sizeof *lp);
 		lp->l_linesize = n+1;
-		lp->l_line = smalloc(lp->l_linesize);
+		lp->l_line = g_malloc(lp->l_linesize);
 		memcpy(lp->l_line, linebuf, lp->l_linesize);
 		lp->l_line[n] = '\0';
 		if (lst && lnd) {
@@ -152,8 +152,8 @@ define1(const char *name, int account)
 				"A macro named \"%s\" already exists.\n",
 				mp->ma_name);
 			freelines(mp->ma_contents);
-			free(mp->ma_name);
-			free(mp);
+			g_free(mp->ma_name);
+			g_free(mp);
 			return 1;
 		}
 		undef1(mp->ma_name, accounts);
@@ -184,7 +184,7 @@ undef1(const char *name, struct macro **table)
 
 	if ((mp = malook(name, NULL, table)) != NULL) {
 		freelines(mp->ma_contents);
-		free(mp->ma_name);
+		g_free(mp->ma_name);
 		mp->ma_name = NULL;
 	}
 }
@@ -256,12 +256,12 @@ maexec(struct macro *mp)
 			sp++;
 		if (sp == &lp->l_line[lp->l_linesize])
 			continue;
-		cp = copy = smalloc(lp->l_linesize + (lp->l_line - sp));
+		cp = copy = g_malloc(lp->l_linesize + (lp->l_line - sp));
 		do
 			*cp++ = *sp != '\n' ? *sp : ' ';
 		while (++sp < &lp->l_line[lp->l_linesize]);
 		r = execute(copy, 0, lp->l_linesize);
-		free(copy);
+		g_free(copy);
 	}
 	unset_allow_undefined = 0;
 	return r;
@@ -306,12 +306,12 @@ freelines(struct line *lp)
 	struct line	*lq = NULL;
 
 	while (lp) {
-		free(lp->l_line);
-		free(lq);
+		g_free(lp->l_line);
+		g_free(lq);
 		lq = lp;
 		lp = lp->l_next;
 	}
-	free(lq);
+	g_free(lq);
 }
 
 int

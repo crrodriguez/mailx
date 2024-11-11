@@ -760,7 +760,7 @@ cram_md5_string(const char *user, const char *pass, const char *b64)
 	in.l = strlen(in.s);
 	mime_fromb64(&in, &out, 0);
 	HMAC(EVP_md5(), pass, strlen(pass), out.s, out.l, digest, NULL);
-	free(out.s);
+	g_free(out.s);
 	xp = md5tohex(digest);
 	sp = ac_alloc(ss = strlen(user) + strlen(xp) + 2);
 	snprintf(sp, ss, "%s %s", user, xp);
@@ -768,7 +768,7 @@ cram_md5_string(const char *user, const char *pass, const char *b64)
 	ac_free(sp);
 	rp = salloc(rs = strlen(cp) + 3);
 	snprintf(rp, rs, "%s\r\n", cp);
-	free(cp);
+	g_free(cp);
 	return rp;
 }
 
@@ -784,11 +784,11 @@ getuser(void)
 	}
 	if (readline(stdin, &line, &linesize) == 0) {
 		if (line)
-			free(line);
+			g_free(line);
 		return NULL;
 	}
 	user = savestr(line);
-	free(line);
+	g_free(line);
 	return user;
 }
 
@@ -817,11 +817,11 @@ getpassword(struct termios *otio, int *reset_tio, const char *query)
 	*reset_tio = 0;
 	if (i < 0) {
 		if (line)
-			free(line);
+			g_free(line);
 		return NULL;
 	}
 	pass = savestr(line);
-	free(line);
+	g_free(line);
 	return pass;
 }
 
@@ -856,7 +856,7 @@ transflags(struct message *omessage, long omsgCount, int transparent)
 	dot = newdot;
 	setdot(newdot);
 	prevdot = newprevdot;
-	free(omessage);
+	g_free(omessage);
 }
 
 char *
@@ -874,7 +874,7 @@ getrandstring(size_t length)
 	cp = memtob64(data, length);
 	rp = salloc(length+1);
 	strncpy(rp, cp, length)[length] = '\0';
-	free(cp);
+	g_free(cp);
 	return rp;
 }
 
@@ -884,66 +884,7 @@ out_of_memory(void)
 	panic("no memory");
 }
 
-void *
-smalloc(size_t s)
-{
-	void *p;
-
-	if (s == 0)
-		s = 1;
-	if ((p = malloc(s)) == NULL)
-		out_of_memory();
-	return p;
-}
-
-void *
-srealloc(void *v, size_t s)
-{
-	void *r;
-
-	if (s == 0)
-		s = 1;
-	if (v == NULL)
-		return smalloc(s);
-	if ((r = realloc(v, s)) == NULL)
-		out_of_memory();
-	return r;
-}
-
-void *
-scalloc(size_t nmemb, size_t size)
-{
-	void *vp;
-
-	if (size == 0)
-		size = 1;
-	if ((vp = calloc(nmemb, size)) == NULL)
-		out_of_memory();
-	return vp;
-}
-
-char *
-sstpcpy(char *dst, const char *src)
-{
-	while ((*dst = *src++) != '\0')
-		dst++;
-	return dst;
-}
-
-char *
-sstrdup(const char *cp)
-{
-	char	*dp;
-	
-	if (cp) {
-		dp = smalloc(strlen(cp) + 1);
-		strcpy(dp, cp);
-		return dp;
-	} else
-		return NULL;
-}
-
-enum okay 
+enum okay
 makedir(const char *name)
 {
 	int	e;
@@ -1017,7 +958,7 @@ makeprint(struct str *in, struct str *out)
 	char	*inp, *outp;
 	size_t	msz, dist;
 
-	out->s = smalloc(msz = in->l + 1);
+	out->s = g_malloc(msz = in->l + 1);
 	if (print_all_chars == -1)
 		print_all_chars = value("print-all-chars") != NULL;
 	if (print_all_chars) {
@@ -1062,7 +1003,7 @@ makeprint(struct str *in, struct str *out)
 			out->l += n;
 			if (out->l >= msz - 1) {
 				dist = outp - out->s;
-				out->s = srealloc(out->s, msz += 32);
+				out->s = g_realloc(out->s, msz += 32);
 				outp = &out->s[dist];
 			}
 			for (i = 0; i < n; i++)
@@ -1096,7 +1037,7 @@ prstr(const char *s)
 	rp = salloc(out.l + 1);
 	memcpy(rp, out.s, out.l);
 	rp[out.l] = '\0';
-	free(out.s);
+	g_free(out.s);
 	return rp;
 }
 
@@ -1110,7 +1051,7 @@ prout(const char *s, size_t sz, FILE *fp)
 	in.l = sz;
 	makeprint(&in, &out);
 	n = fwrite(out.s, 1, out.l, fp);
-	free(out.s);
+	g_free(out.s);
 	return n;
 }
 

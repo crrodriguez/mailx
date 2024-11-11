@@ -713,8 +713,8 @@ ignore1(char **list, struct ignoretab *tab, char *which)
 			continue;
 		}
 		h = hash(field);
-		igp = (struct ignore *)scalloc(1, sizeof (struct ignore));
-		igp->i_field = smalloc(strlen(field) + 1);
+		igp = (struct ignore *)g_malloc0_n(1, sizeof (struct ignore));
+		igp->i_field = g_malloc(strlen(field) + 1);
 		strcpy(igp->i_field, field);
 		igp->i_link = tab->i_head[h];
 		tab->i_head[h] = igp;
@@ -805,12 +805,12 @@ unignore_one(const char *name, struct ignoretab *tab)
 
 	for (ip = tab->i_head[h]; ip; ip = ip->i_link) {
 		if (asccasecmp(ip->i_field, name) == 0) {
-			free(ip->i_field);
+			g_free(ip->i_field);
 			if (iq != NULL)
 				iq->i_link = ip->i_link;
 			else
 				tab->i_head[h] = ip->i_link;
-			free(ip);
+			g_free(ip);
 			tab->i_count--;
 			break;
 		}

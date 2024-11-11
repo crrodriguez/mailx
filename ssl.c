@@ -100,7 +100,7 @@ ssl_vrfy_decide(void)
 			else
 				ok = STOP;
 			if (line)
-				free(line);
+				g_free(line);
 		}
 		break;
 	case VRFY_WARN:
@@ -141,8 +141,8 @@ smime_split(FILE *ip, FILE **hp, FILE **bp, long xcount, int keep)
 	rm(bn);
 	Ftfree(&hn);
 	Ftfree(&bn);
-	buf = smalloc(bufsize = LINESIZE);
-	savedfields = smalloc(savedsize = 1);
+	buf = g_malloc(bufsize = LINESIZE);
+	savedfields = g_malloc(savedsize = 1);
 	*savedfields = '\0';
 	if (xcount < 0)
 		count = fsize(ip);
@@ -155,7 +155,7 @@ smime_split(FILE *ip, FILE **hp, FILE **bp, long xcount, int keep)
 				fputs("X-Encoded-", *hp);
 			for (;;) {
 				savedsize += buflen;
-				savedfields = srealloc(savedfields, savedsize);
+				savedfields = g_realloc(savedfields, savedsize);
 				strcat(savedfields, buf);
 				if (keep)
 					fwrite(buf, sizeof *buf, buflen, *hp);
@@ -178,7 +178,7 @@ smime_split(FILE *ip, FILE **hp, FILE **bp, long xcount, int keep)
 		fwrite(buf, sizeof *buf, buflen, *bp);
 	fflush(*bp);
 	rewind(*bp);
-	free(buf);
+	g_free(buf);
 	return OKAY;
 }
 
@@ -329,7 +329,7 @@ smime_decrypt_assemble(struct message *m, FILE *hp, FILE *bp)
 	}
 	Fclose(hp);
 	Fclose(bp);
-	free(buf);
+	g_free(buf);
 	fflush(mb.mb_otf);
 	if (ferror(mb.mb_otf)) {
 		perror("decrypted output data");

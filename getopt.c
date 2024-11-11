@@ -21,9 +21,9 @@
 #define	ac_alloc(n)	alloca(n)
 #define	ac_free(n)
 #else	/* !HAVE_ALLOCA */
-extern void	*smalloc(size_t);
-#define	ac_alloc(n)	smalloc(n)
-#define	ac_free(n)	free(n)
+extern void	*g_malloc(size_t);
+#define	ac_alloc(n)	g_malloc(n)
+#define	ac_free(n)	g_free(n)
 #endif	/* !HAVE_ALLOCA */
 
 #ifndef	HAVE_SSIZE_T

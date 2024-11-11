@@ -76,11 +76,6 @@ char *getpassword(struct termios *otio, int *reset_tio, const char *query);
 void transflags(struct message *omessage, long omsgCount, int transparent);
 char *getrandstring(size_t length);
 void out_of_memory(void);
-void *smalloc(size_t s);
-void *srealloc(void *v, size_t s);
-void *scalloc(size_t nmemb, size_t size);
-char *sstpcpy(char *dst, const char *src);
-char *sstrdup(const char *cp);
 enum okay makedir(const char *name);
 enum okay cwget(struct cw *cw);
 enum okay cwret(struct cw *cw);
@@ -516,3 +511,4 @@ int hash(const char *name);
 int unset_internal(const char *name);
 void remove_group(const char *name);
 /* version.c */
+#include <glib.h>

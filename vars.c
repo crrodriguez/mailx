@@ -91,7 +91,7 @@ assign(const char *name, const char *value)
 	h = hash(name);
 	vp = lookup(name);
 	if (vp == NULL) {
-		vp = (struct var *)scalloc(1, sizeof *vp);
+		vp = (struct var *)g_malloc0_n(1, sizeof *vp);
 		vp->v_name = vcopy(name);
 		vp->v_link = variables[h];
 		variables[h] = vp;
@@ -110,7 +110,7 @@ static void
 vfree(char *cp)
 {
 	if (*cp)
-		free(cp);
+		g_free(cp);
 }
 
 /*
@@ -127,7 +127,7 @@ vcopy(const char *str)
 	if (*str == '\0')
 		return "";
 	len = strlen(str) + 1;
-	new = smalloc(len);
+	new = g_malloc(len);
 	memcpy(new, str, (int) len);
 	return new;
 }
@@ -241,14 +241,14 @@ unset_internal(const char *name)
 		variables[h] = variables[h]->v_link;
 		vfree(vp2->v_name);
 		vfree(vp2->v_value);
-		free(vp2);
+		g_free(vp2);
 		return 0;
 	}
 	for (vp = variables[h]; vp->v_link != vp2; vp = vp->v_link);
 	vp->v_link = vp2->v_link;
 	vfree(vp2->v_name);
 	vfree(vp2->v_value);
-	free(vp2);
+	g_free(vp2);
 	return 0;
 }
 
@@ -261,7 +261,7 @@ remove_grouplist(struct grouphead *gh)
 		for (; gp; gp = gq) {
 			gq = gp->ge_link;
 			vfree(gp->ge_name);
-			free(gp);
+			g_free(gp);
 		}
 	}
 }
@@ -280,7 +280,7 @@ remove_group(const char *name)
 				gp->g_link = gh->g_link;
 			else
 				groups[h] = NULL;
-			free(gh);
+			g_free(gh);
 			break;
 		}
 		gp = gh;

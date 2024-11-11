@@ -378,12 +378,12 @@ sendpart(struct message *zmp, struct mimepart *ip, FILE *obuf,
 					action, prefix, prefixlen, stats,
 					NULL, NULL);
 			if (ferror(obuf)) {
-				free(line);
+				g_free(line);
 				return -1;
 			}
 		}
 	}
-	free(line);
+	g_free(line);
 	line = NULL;
 skip:	switch (ip->m_mimecontent) {
 	case MIME_822:
@@ -659,11 +659,11 @@ skip:	switch (ip->m_mimecontent) {
 				break;
 			}
 			if (linelen + linelen2 + 1 > linesize)
-				line = srealloc(line, linesize = linelen +
+				line = g_realloc(line, linesize = linelen +
 						linelen2 + 1);
 			memcpy(&line[linelen], line2, linelen2+1);
 			linelen += linelen2;
-			free(line2);
+			g_free(line2);
 		}
 		rest = NULL;
 		restsize = 0;
@@ -683,7 +683,7 @@ skip:	switch (ip->m_mimecontent) {
 			goto nextl;
 		}
 	}
-end:	free(line);
+end:	g_free(line);
 	if (pbuf != qbuf) {
 		safe_signal(SIGPIPE, SIG_IGN);
 		Pclose(pbuf);
@@ -832,7 +832,7 @@ parsemultipart(struct message *zmp, struct mimepart *ip, enum parseflags pf,
 	for (np = ip->m_multipart; np; np = np->m_nextpart)
 		if (np->m_mimecontent != MIME_DISCARD)
 			parsepart(zmp, np, pf, level+1);
-	free(line);
+	g_free(line);
 }
 
 static void
@@ -1019,7 +1019,7 @@ newfile(struct mimepart *ip, int *ispipe, sighandler_type *oldpipe)
 		mime_fromhdr(&in, &out, TD_ISPR);
 		memcpy(f, out.s, out.l);
 		*(f + out.l) = '\0';
-		free(out.s);
+		g_free(out.s);
 	}
 	if (value("interactive") != NULL) {
 		printf("Enter filename for part %s (%s)",
@@ -1120,7 +1120,7 @@ pipecpy(FILE *pipebuf, FILE *outbuf, FILE *origobuf,
 			addstats(stats, 1, sz);
 	}
 	if (line)
-		free(line);
+		g_free(line);
 	fclose(pipebuf);
 }
 

@@ -193,7 +193,7 @@ imap_gss(struct mailbox *mp, char *user)
 		cp = memtob64(send_tok.value, send_tok.length);
 		gss_release_buffer(&min_stat, &send_tok);
 		snprintf(o, sizeof o, "%s\r\n", cp);
-		free(cp);
+		g_free(cp);
 		IMAP_OUT(o, 0, return STOP);
 		imap_answer(mp, 1);
 		if (response_type != RESPONSE_CONT)
@@ -224,7 +224,7 @@ imap_gss(struct mailbox *mp, char *user)
 			gss_release_name(&min_stat, &target_name);
 			return STOP;
 		}
-		free(out.s);
+		g_free(out.s);
 	}
 	/*
 	 * Pass token obtained from second gss_init_sec_context() call.
@@ -233,7 +233,7 @@ imap_gss(struct mailbox *mp, char *user)
 	cp = memtob64(send_tok.value, send_tok.length);
 	gss_release_buffer(&min_stat, &send_tok);
 	snprintf(o, sizeof o, "%s\r\n", cp);
-	free(cp);
+	g_free(cp);
 	IMAP_OUT(o, 0, return STOP);
 	/*
 	 * First octet: bit-mask with protection mechanisms.
@@ -255,7 +255,7 @@ imap_gss(struct mailbox *mp, char *user)
 		imap_gss_error("unwrapping data", maj_stat, min_stat);
 		return STOP;
 	}
-	free(out.s);
+	g_free(out.s);
 	/*
 	 * First octet: bit-mask with protection mechanisms (1 = no protection
 	 * 	mechanism).
@@ -276,7 +276,7 @@ imap_gss(struct mailbox *mp, char *user)
 	}
 	cp = memtob64(recv_tok.value, recv_tok.length);
 	snprintf(o, sizeof o, "%s\r\n", cp);
-	free(cp);
+	g_free(cp);
 	IMAP_OUT(o, MB_COMD, return STOP);
 	while (mp->mb_active & MB_COMD)
 		ok = imap_answer(mp, 1);

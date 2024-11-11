@@ -339,8 +339,8 @@ imap_response_parse(void)
 	char	*pp;
 
 	if (parsebufsize < imapbufsize) {
-		free(parsebuf);
-		parsebuf = smalloc(parsebufsize = imapbufsize);
+		g_free(parsebuf);
+		parsebuf = g_malloc(parsebufsize = imapbufsize);
 	}
 	strcpy(parsebuf, imapbuf);
 	pp = parsebuf;
@@ -398,7 +398,7 @@ imap_response_parse(void)
 		imap_other_get(pp);
 }
 
-static enum okay 
+static enum okay
 imap_answer(struct mailbox *mp, int errprnt)
 {
 	int	i, complete;
@@ -615,12 +615,12 @@ imap_noop(void)
 	return ok;
 }
 
-static void 
+static void
 rec_queue(enum rec_type type, unsigned long count)
 {
 	struct record	*rp;
 
-	rp = scalloc(1, sizeof *rp);
+	rp = g_malloc0_n(1, sizeof *rp);
 	rp->rec_type = type;
 	rp->rec_count = count;
 	if (record && recend) {
@@ -642,7 +642,7 @@ rec_dequeue(void)
 	if (record == NULL)
 		return STOP;
 	omessage = message;
-	message = smalloc((msgCount+1) * sizeof *message);
+	message = g_malloc_n((msgCount+1), sizeof *message);
 	if (msgCount)
 		memcpy(message, omessage, msgCount * sizeof *message);
 	memset(&message[msgCount], 0, sizeof *message);
@@ -680,14 +680,14 @@ rec_dequeue(void)
 			 */
 			break;
 		}
-		free(rq);
+		g_free(rq);
 		rq = rp;
 		rp = rp->rec_next;
 	}
-	free(rq);
+	g_free(rq);
 	record = recend = NULL;
 	if (ok == OKAY && exists > msgCount) {
-		message = srealloc(message,
+		message = g_realloc(message,
 				(exists + 1) * sizeof *message);
 		memset(&message[msgCount], 0,
 				(exists - msgCount + 1) * sizeof *message);
@@ -697,7 +697,7 @@ rec_dequeue(void)
 		msgCount = exists;
 	}
 	if (ok == STOP) {
-		free(message);
+		g_free(message);
 		message = omessage;
 	}
 	return ok;
@@ -709,10 +709,10 @@ rec_rmqueue(void)
 	struct record	*rp, *rq = NULL;
 
 	for (rp = record; rp; rp = rp->rec_next) {
-		free(rq);
+		g_free(rq);
 		rq = rp;
 	}
-	free(rq);
+	g_free(rq);
 	record = recend = NULL;
 }
 
@@ -1061,7 +1061,7 @@ imap_setptr(struct mailbox *mp, int newmail, int transparent, int *prevcount)
 		msgCount = 0;
 	}
 	if (dequeued != OKAY) {
-		message = scalloc(msgCount + 1, sizeof *message);
+		message = g_malloc0_n(msgCount + 1, sizeof *message);
 		for (i = 0; i < msgCount; i++)
 			imap_init(mp, i);
 		if (!newmail && mp->mb_type == MB_IMAP)
@@ -1173,7 +1173,7 @@ imap_setfile1(const char *xserver, int newmail, int isedit, int transparent)
 				disconnected(mb.mb_imap_account) == 0)
 			same_imap_account = 1;
 	}
-	account = sstrdup(sp);
+	account = g_strdup(sp);
 	imap_split(&server, &sp, &use_ssl, &cp, &uhp, &mbx, &pass, &user);
 	so.s_fd = -1;
 	if (!same_imap_account) {
@@ -1186,7 +1186,7 @@ imap_setfile1(const char *xserver, int newmail, int isedit, int transparent)
 	if (!transparent)
 		quit();
 	edit = isedit;
-	free(mb.mb_imap_account);
+	g_free(mb.mb_imap_account);
 	mb.mb_imap_account = account;
 	if (!same_imap_account) {
 		if (mb.mb_sock.s_fd >= 0)
@@ -1202,8 +1202,8 @@ imap_setfile1(const char *xserver, int newmail, int isedit, int transparent)
 			fclose(mb.mb_otf);
 			mb.mb_otf = NULL;
 		}
-		free(mb.mb_imap_mailbox);
-		mb.mb_imap_mailbox = sstrdup(mbx);
+		g_free(mb.mb_imap_mailbox);
+		mb.mb_imap_mailbox = g_strdup(mbx);
 		initbox(server);
 	}
 	mb.mb_type = MB_VOID;
@@ -1373,7 +1373,7 @@ imap_fetchdata(struct mailbox *mp, struct message *m, size_t expected,
 			break;
 		}
 	}
-	free(line);
+	g_free(line);
 	return excess;
 }
 
@@ -1454,13 +1454,13 @@ imap_get(struct mailbox *mp, struct message *m, enum needspec need)
 		item = "BODY.PEEK[]";
 		resp = "BODY[]";
 		if (m->m_flag & HAVE_HEADER && m->m_size) {
-			char	*hdr = smalloc(m->m_size);
+			char	*hdr = g_malloc(m->m_size);
 			fflush(mp->mb_otf);
 			if (fseek(mp->mb_itf, (long)mailx_positionof(m->m_block,
 						m->m_offset), SEEK_SET) < 0 ||
 					fread(hdr, 1, m->m_size, mp->mb_itf)
 						!= m->m_size) {
-				free(hdr);
+				g_free(hdr);
 				break;
 			}
 			head = hdr;
@@ -1564,7 +1564,7 @@ out:	while (mp->mb_active & MB_COMD)
 	imaplock--;
 	if (ok == OKAY)
 		putcache(mp, m);
-	free(head);
+	g_free(head);
 	if (interrupts)
 		onintr(0);
 	return ok;
@@ -2166,7 +2166,7 @@ imap_append1(struct mailbox *mp, const char *name, FILE *fp,
 			return STOP;
 		ok = OKAY;
 	}
-	buf = smalloc(bufsize = LINESIZE);
+	buf = g_malloc(bufsize = LINESIZE);
 	buflen = 0;
 again:	size = xsize;
 	count = fsize(fp);
@@ -2233,7 +2233,7 @@ again:	size = xsize;
 	}
 out:	if (queuefp != NULL)
 		Fclose(queuefp);
-	free(buf);
+	g_free(buf);
 	return ok;
 }
 
@@ -2249,7 +2249,7 @@ imap_append0(struct mailbox *mp, const char *name, FILE *fp)
 	time_t	tim;
 	enum okay	ok;
 
-	buf = smalloc(bufsize = LINESIZE);
+	buf = g_malloc(bufsize = LINESIZE);
 	buflen = 0;
 	count = fsize(fp);
 	offs = ftell(fp);
@@ -2309,7 +2309,7 @@ imap_append0(struct mailbox *mp, const char *name, FILE *fp)
 					}
 		}
 	} while (bp != NULL);
-	free(buf);
+	g_free(buf);
 	return OKAY;
 }
 
@@ -2801,7 +2801,7 @@ imap_appenduid_cached(struct mailbox *mp, FILE *fp)
 	size_t	bufsize, buflen, count;
 	enum okay	ok = STOP;
 
-	buf = smalloc(bufsize = LINESIZE);
+	buf = g_malloc(bufsize = LINESIZE);
 	buflen = 0;
 	count = fsize(fp);
 	if (fgetline(&buf, &bufsize, &count, &buflen, fp, 0) == NULL)
@@ -2842,7 +2842,7 @@ imap_appenduid_cached(struct mailbox *mp, FILE *fp)
 	imap_appenduid(mp, tp, t, 0, xsize-2, ysize-1, lines-1, flag,
 			imap_unquotestr(name));
 	ok = OKAY;
-stop:	free(buf);
+stop:	g_free(buf);
 	if (tp)
 		Fclose(tp);
 	return ok;
@@ -3079,7 +3079,7 @@ imap_dequeue(struct mailbox *mp, FILE *fp)
 	long	offs, offs1, offs2, octets;
 	int	n, twice, gotcha = 0;
 
-	buf = smalloc(bufsize = LINESIZE);
+	buf = g_malloc(bufsize = LINESIZE);
 	buflen = 0;
 	count = fsize(fp);
 	while (offs1 = ftell(fp),

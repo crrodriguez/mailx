@@ -120,7 +120,7 @@ setptr(FILE *ibuf, off_t offset)
 				append(&this);
 			makemessage();
 			if (linebuf)
-				free(linebuf);
+				g_free(linebuf);
 			return;
 		}
 #ifdef	notdef
@@ -227,11 +227,11 @@ readline_restart(FILE *ibuf, char **linebuf, size_t *linesize, size_t n)
 	 */
 	if (fileno(ibuf) == 0 && is_a_tty[0]) {
 		if (*linebuf == NULL || *linesize < LINESIZE + n + 1)
-			*linebuf = srealloc(*linebuf,
+			*linebuf = g_realloc(*linebuf,
 					*linesize = LINESIZE + n + 1);
 		for (;;) {
 			if (n >= *linesize - 128)
-				*linebuf = srealloc(*linebuf, *linesize += 256);
+				*linebuf = g_realloc(*linebuf, *linesize += 256);
 again:
 			sz = read(0, *linebuf + n, *linesize - n - 1);
 			if (sz > 0) {
@@ -337,7 +337,7 @@ static void
 append(struct message *mp)
 {
 	if (msgCount + 1 >= msgspace)
-		message = srealloc(message, (msgspace += 64) * sizeof *message);
+		message = g_realloc_n(message, (msgspace += 64) , sizeof *message);
 	if (msgCount > 0)
 		message[msgCount - 1] = *mp;
 }
@@ -616,7 +616,7 @@ fgetline(char **line, size_t *linesize, size_t *count, size_t *llen,
 		 */
 		return fgetline_byone(line, linesize, llen, fp, appendnl, 0);
 	if (*line == NULL || *linesize < LINESIZE)
-		*line = srealloc(*line, *linesize = LINESIZE);
+		*line = g_realloc(*line, *linesize = LINESIZE);
 	sz = *linesize <= *count ? *linesize : *count + 1;
 	if (sz <= 1 || fgets(*line, sz, fp) == NULL)
 		/*
@@ -627,7 +627,7 @@ fgetline(char **line, size_t *linesize, size_t *count, size_t *llen,
 	i_llen = length_of_line(*line, sz);
 	*count -= i_llen;
 	while ((*line)[i_llen - 1] != '\n') {
-		*line = srealloc(*line, *linesize += 256);
+		*line = g_realloc(*line, *linesize += 256);
 		sz = *linesize - i_llen;
 		sz = (sz <= *count ? sz : *count + 1);
 		if (sz <= 1 || fgets(&(*line)[i_llen], sz, fp) == NULL) {
@@ -656,10 +656,10 @@ fgetline_byone(char **line, size_t *linesize, size_t *llen,
 	int c;
 
 	if (*line == NULL || *linesize < LINESIZE + n + 1)
-		*line = srealloc(*line, *linesize = LINESIZE + n + 1);
+		*line = g_realloc(*line, *linesize = LINESIZE + n + 1);
 	for (;;) {
 		if (n >= *linesize - 128)
-			*line = srealloc(*line, *linesize += 256);
+			*line = g_realloc(*line, *linesize += 256);
 		c = getc(fp);
 		if (c != EOF) {
 			(*line)[n++] = c;
@@ -784,7 +784,7 @@ swrite1(struct sock *sp, const char *data, int sz, int use_buffer)
 
 		if (sp->s_wbuf == NULL) {
 			sp->s_wbufsize = 4096;
-			sp->s_wbuf = smalloc(sp->s_wbufsize);
+			sp->s_wbuf = g_malloc(sp->s_wbufsize);
 			sp->s_wbufpos = 0;
 		}
 		while (sp->s_wbufpos + sz > sp->s_wbufsize) {
@@ -858,7 +858,7 @@ sgetline(char **line, size_t *linesize, size_t *linelen, struct sock *sp)
 	do {
 		if (*line == NULL || lp > &(*line)[*linesize - 128]) {
 			size_t diff = lp - *line;
-			*line = srealloc(*line, *linesize += 256);
+			*line = g_realloc(*line, *linesize += 256);
 			lp = &(*line)[diff];
 		}
 		if (sp->s_rbufptr == NULL ||

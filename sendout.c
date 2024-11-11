@@ -288,7 +288,7 @@ attach_file1(struct attachment *ap, FILE *fo, int dosign)
 		}
 	}
 #endif	/* HAVE_ICONV */
-	buf = smalloc(bufsize = INFIX_BUF);
+	buf = g_malloc(bufsize = INFIX_BUF);
 	if (convert == CONV_TOQP
 #ifdef	HAVE_ICONV
 			|| iconvd != (iconv_t)-1
@@ -320,7 +320,7 @@ attach_file1(struct attachment *ap, FILE *fo, int dosign)
 	if (ferror(fi))
 		err = -1;
 	Fclose(fi);
-	free(buf);
+	g_free(buf);
 	return err;
 }
 
@@ -402,7 +402,7 @@ make_multipart(struct header *hp, int convert, FILE *fi, FILE *fo,
 		fprintf(fo, "\nContent-Transfer-Encoding: %s\n"
 				"Content-Disposition: inline\n\n",
 				getencoding(convert));
-		buf = smalloc(bufsize = INFIX_BUF);
+		buf = g_malloc(bufsize = INFIX_BUF);
 		if (convert == CONV_TOQP
 #ifdef	HAVE_ICONV
 				|| iconvd != (iconv_t)-1
@@ -429,11 +429,11 @@ make_multipart(struct header *hp, int convert, FILE *fi, FILE *fo,
 			if (mime_write(buf, sz, fo, convert,
 					TD_ICONV, NULL, (size_t)0,
 					NULL, NULL) == 0) {
-				free(buf);
+				g_free(buf);
 				return -1;
 			}
 		}
-		free(buf);
+		g_free(buf);
 		if (ferror(fi))
 			return -1;
 		if (c != '\n')
@@ -572,7 +572,7 @@ infix(struct header *hp, FILE *fi, int dosign)
 			fflush(fi);
 			count = fsize(fi);
 		}
-		buf = smalloc(bufsize = INFIX_BUF);
+		buf = g_malloc(bufsize = INFIX_BUF);
 		for (;;) {
 			if (convert == CONV_TOQP
 #ifdef	HAVE_ICONV
@@ -599,13 +599,13 @@ infix(struct header *hp, FILE *fi, int dosign)
 					iconvd = (iconv_t)-1;
 				}
 #endif
-				free(buf);
+				g_free(buf);
 				return NULL;
 			}
 		}
 		if (convert == CONV_TOQP && lastc != '\n')
 			fwrite("=\n", 1, 2, nfo);
-		free(buf);
+		g_free(buf);
 		if (ferror(fi)) {
 			Fclose(nfo);
 			Fclose(nfi);
@@ -656,12 +656,12 @@ savemail(char *name, FILE *fi)
 	int prependnl = 0;
 	int error = 0;
 
-	buf = smalloc(bufsize = LINESIZE);
+	buf = g_malloc(bufsize = LINESIZE);
 	time(&now);
 	if ((fo = Zopen(name, "a+", NULL)) == NULL) {
 		if ((fo = Zopen(name, "wx", NULL)) == NULL) {
 			perror(name);
-			free(buf);
+			g_free(buf);
 			return (-1);
 		}
 	} else {
@@ -680,7 +680,7 @@ savemail(char *name, FILE *fi)
 			default:
 				if (ferror(fo)) {
 					perror(name);
-					free(buf);
+					g_free(buf);
 					return -1;
 				}
 			}
@@ -721,13 +721,13 @@ savemail(char *name, FILE *fi)
 	fflush(fi);
 	rewind(fi);
 	/*
-	 * OpenBSD 3.2 and NetBSD 1.5.2 were reported not to 
+	 * OpenBSD 3.2 and NetBSD 1.5.2 were reported not to
 	 * reset the kernel file offset after the calls above,
 	 * a clear violation of IEEE Std 1003.1, 1996, 8.2.3.7.
 	 * So do it 'manually'.
 	 */
 	lseek(fileno(fi), 0, SEEK_SET);
-	free(buf);
+	g_free(buf);
 	return error;
 }
 
@@ -761,7 +761,7 @@ mail(struct name *to, struct name *cc, struct name *bcc, struct name *replyto,
 	head.h_smopts = smopts;
 	mail1(&head, 0, NULL, quotefile, recipient_record, 0, tflag, Eflag);
 	if (subject != NULL)
-		free(out.s);
+		g_free(out.s);
 	return(0);
 }
 
@@ -1446,7 +1446,7 @@ infix_resend(FILE *fi, FILE *fo, struct message *mp, struct name *to,
 		if (cp != NULL) {
 			if (mime_name_invalid(cp, 1)) {
 				if (buf)
-					free(buf);
+					g_free(buf);
 				return 1;
 			}
 			fwrite("Resent-Reply-To: ", sizeof (char),
@@ -1460,7 +1460,7 @@ infix_resend(FILE *fi, FILE *fo, struct message *mp, struct name *to,
 #endif	/* notdef */
 		if (fmt("Resent-To:", to, fo, 1, 1, 0)) {
 			if (buf)
-				free(buf);
+				g_free(buf);
 			return 1;
 		}
 		if (value("stealthmua") == NULL) {
@@ -1494,7 +1494,7 @@ infix_resend(FILE *fi, FILE *fo, struct message *mp, struct name *to,
 		fwrite(buf, sizeof *buf, c, fo);
 	}
 	if (buf)
-		free(buf);
+		g_free(buf);
 	if (ferror(fo)) {
 		perror(catgets(catd, CATSET, 188, "temporary mail file"));
 		return 1;

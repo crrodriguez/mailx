@@ -365,7 +365,7 @@ extract_header(FILE *fp, struct header *hp)
 		fprintf(stderr, catgets(catd, CATSET, 267,
 				"Restoring deleted header lines\n"));
 	if (linebuf)
-		free(linebuf);
+		g_free(linebuf);
 }
 
 /*
@@ -391,7 +391,7 @@ hfield_mult(char *field, struct message *mp, int mult)
 	if ((mp->m_flag & MNOFROM) == 0) {
 		if (readline(ibuf, &linebuf, &linesize) < 0) {
 			if (linebuf)
-				free(linebuf);
+				g_free(linebuf);
 			return NULL;
 		}
 	}
@@ -399,7 +399,7 @@ hfield_mult(char *field, struct message *mp, int mult)
 		if ((lc = gethfield(ibuf, &linebuf, &linesize, lc, &colon))
 				< 0) {
 			if (linebuf)
-				free(linebuf);
+				g_free(linebuf);
 			return oldhfield;
 		}
 		if ((hfield = thisfield(linebuf, field)) != NULL) {
@@ -409,7 +409,7 @@ hfield_mult(char *field, struct message *mp, int mult)
 		}
 	}
 	if (linebuf)
-		free(linebuf);
+		g_free(linebuf);
 	return oldhfield;
 }
 
@@ -428,7 +428,7 @@ gethfield(FILE *f, char **linebuf, size_t *linesize, int rem, char **colon)
 	int c, isenc;
 
 	if (*linebuf == NULL)
-		*linebuf = srealloc(*linebuf, *linesize = 1);
+		*linebuf = g_realloc(*linebuf, *linesize = 1);
 	**linebuf = '\0';
 	for (;;) {
 		if (--rem < 0)
@@ -468,7 +468,7 @@ gethfield(FILE *f, char **linebuf, size_t *linesize, int rem, char **colon)
 			if (cp + c >= *linebuf + *linesize - 2) {
 				size_t diff = cp - *linebuf;
 				size_t colondiff = *colon - *linebuf;
-				*linebuf = srealloc(*linebuf,
+				*linebuf = g_realloc(*linebuf,
 						*linesize += c + 2);
 				cp = &(*linebuf)[diff];
 				*colon = &(*linebuf)[colondiff];
@@ -480,7 +480,7 @@ gethfield(FILE *f, char **linebuf, size_t *linesize, int rem, char **colon)
 		}
 		*cp = 0;
 		if (line2)
-			free(line2);
+			g_free(line2);
 		return rem;
 	}
 	/* NOTREACHED */
@@ -796,7 +796,7 @@ brk:	if (cstart == NULL) {
 	mime_fromhdr(&in, &out, TD_ISPR|TD_ICONV);
 	ac_free(rname);
 	rname = savestr(out.s);
-	free(out.s);
+	g_free(out.s);
 	while (blankchar(*rname & 0377))
 		rname++;
 	for (rp = rname; *rp; rp++);
@@ -846,7 +846,7 @@ name1(struct message *mp, int reptype)
 	if (reptype == 0 && (cp = hfield("sender", mp)) != NULL &&
 			*cp != '\0')
 		return cp;
-	namebuf = smalloc(namesize = 1);
+	namebuf = g_malloc(namesize = 1);
 	namebuf[0] = 0;
 	if (mp->m_flag & MNOFROM)
 		goto out;
@@ -856,7 +856,7 @@ name1(struct message *mp, int reptype)
 		goto out;
 newname:
 	if (namesize <= linesize)
-		namebuf = srealloc(namebuf, namesize = linesize + 1);
+		namebuf = g_realloc(namebuf, namesize = linesize + 1);
 	for (cp = linebuf; *cp && *cp != ' '; cp++)
 		;
 	for (; blankchar(*cp & 0377); cp++);
@@ -871,7 +871,7 @@ newname:
 	if (strncmp(cp, "From", 4) != 0)
 		goto out;
 	if (namesize <= linesize)
-		namebuf = srealloc(namebuf, namesize = linesize + 1);
+		namebuf = g_realloc(namebuf, namesize = linesize + 1);
 	while ((cp = strchr(cp, 'r')) != NULL) {
 		if (strncmp(cp, "remote", 6) == 0) {
 			if ((cp = strchr(cp, 'f')) == NULL)
@@ -899,8 +899,8 @@ out:
 			*cp == '\0')
 		cp = savestr(namebuf);
 	if (linebuf)
-		free(linebuf);
-	free(namebuf);
+		g_free(linebuf);
+	g_free(namebuf);
 	return cp;
 }
 

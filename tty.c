@@ -141,9 +141,9 @@ rtty_internal(const char *pr, char *src)
 	}
 #ifndef TIOCSTI
 	if (src != NULL)
-		cp = sstpcpy(canonb, src);
+		cp = g_stpcpy(canonb, src);
 	else
-		cp = sstpcpy(canonb, "");
+		cp = g_stpcpy(canonb, "");
 	fputs(canonb, stdout);
 	fflush(stdout);
 #else

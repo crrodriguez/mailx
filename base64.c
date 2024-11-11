@@ -94,7 +94,7 @@ memtob64(const void *vp, size_t isz)
 	char	*rs = NULL;
 
 	if (isz == 0) {
-		rs = smalloc(1);
+		rs = g_malloc(1);
 		*rs = '\0';
 		return rs;
 	}
@@ -106,7 +106,7 @@ memtob64(const void *vp, size_t isz)
 		}
 		h = ctob64((unsigned char *)q, pads);
 		if (l + 5 >= sz)
-			rs = srealloc(rs, sz = l + 100);
+			rs = g_realloc(rs, sz = l + 100);
 		for (i = 0; i < 4; i++)
 			rs[l++] = h[i];
 	} while (c < isz);
@@ -151,14 +151,14 @@ mime_write_tob64(struct str *in, FILE *fo, int is_header)
 /*
  * Decode from base64.
  */
-void 
+void
 mime_fromb64(struct str *in, struct str *out, int is_text)
 {
 	char *p, *q, *upper;
 	signed char c, d, e, f, g;
 	int done = 0, newline = 0;
 
-	out->s = smalloc(in->l * 3 / 4 + 2);
+	out->s = g_malloc(in->l * 3 / 4 + 2);
 	out->l = 0;
 	upper = in->s + in->l;
 	for (p = in->s, q = out->s; p < upper; ) {
@@ -247,7 +247,7 @@ mime_fromb64_b(struct str *in, struct str *out, int is_text, FILE *f)
 	int i;
 	struct str nin;
 
-	nin.s = smalloc(in->l + n);
+	nin.s = g_malloc(in->l + n);
 	if (n != 0 && f_b == f) {
 		for (nin.l = 0; nin.l < n; nin.l++)
 			nin.s[nin.l] = b[nin.l];
@@ -268,6 +268,6 @@ mime_fromb64_b(struct str *in, struct str *out, int is_text, FILE *f)
 	}
 	nin.l -= n;
 	mime_fromb64(&nin, out, is_text);
-	free(nin.s);
+	g_free(nin.s);
 	f_b = f;
 }

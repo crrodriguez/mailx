@@ -89,7 +89,7 @@ nalloc(char *str, enum gfield ntype)
 			in.l = strlen(str);
 			mime_fromhdr(&in, &out, TD_ISPR|TD_ICONV);
 			np->n_fullname = savestr(out.s);
-			free(out.s);
+			g_free(out.s);
 		} else
 			np->n_fullname = np->n_name;
 	} else if (ntype & GSKIN)
@@ -194,7 +194,7 @@ detract(struct name *np, enum gfield ntype)
 	for (p = np; p != NULL; p = p->n_flink) {
 		if (ntype && (p->n_type & GMASK) != ntype)
 			continue;
-		cp = sstpcpy(cp, p->n_fullname);
+		cp = g_stpcpy(cp, p->n_fullname);
 		if (comma && p->n_flink != NULL)
 			*cp++ = ',';
 		*cp++ = ' ';

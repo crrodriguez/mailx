@@ -385,7 +385,7 @@ commands(void)
 			break;
 	}
 	if (linebuf)
-		free(linebuf);
+		g_free(linebuf);
 }
 
 /*
@@ -634,8 +634,8 @@ setmsize(int sz)
 {
 
 	if (msgvec != 0)
-		free(msgvec);
-	msgvec = (int *)scalloc((sz + 1), sizeof *msgvec);
+		g_free(msgvec);
+	msgvec = (int *)g_malloc0_n((sz + 1), sizeof *msgvec);
 }
 
 /*
@@ -826,8 +826,8 @@ getmdot(int newmail)
 		if (value("autothread"))
 			thread(NULL);
 		else if ((cp = value("autosort")) != NULL) {
-			free(mb.mb_sorted);
-			mb.mb_sorted = sstrdup(cp);
+			g_free(mb.mb_sorted);
+			mb.mb_sorted = g_strdup(cp);
 			sort(NULL);
 		}
 	}
@@ -951,12 +951,12 @@ initbox(const char *name)
 	Ftfree(&tempMesg);
 	msgCount = 0;
 	if (message) {
-		free(message);
+		g_free(message);
 		message = NULL;
 		msgspace = 0;
 	}
 	mb.mb_threaded = 0;
-	free(mb.mb_sorted);
+	g_free(mb.mb_sorted);
 	mb.mb_sorted = NULL;
 	mb.mb_flags = MB_NOFLAGS;
 	prevdot = NULL;

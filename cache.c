@@ -361,11 +361,11 @@ initcache(struct mailbox *mp)
 	unsigned long	uv;
 	struct cw	cw;
 
-	free(mp->mb_cache_directory);
+	g_free(mp->mb_cache_directory);
 	mp->mb_cache_directory = NULL;
 	if ((name = encname(mp, "", 1, NULL)) == NULL)
 		return;
-	mp->mb_cache_directory = sstrdup(name);
+	mp->mb_cache_directory = g_strdup(name);
 	if ((uvname = encname(mp, "UIDVALIDITY", 1, NULL)) == NULL)
 		return;
 	if (cwget(&cw) == STOP)
@@ -483,7 +483,7 @@ builds(long *contentelem)
 		if (*x != '\0')
 			continue;
 		if (*contentelem >= contentalloc - 1)
-			contents = srealloc(contents,
+			contents = g_realloc(contents,
 				(contentalloc += 200) * sizeof *contents);
 		contents[(*contentelem)++] = n;
 	}
@@ -522,7 +522,7 @@ purge(struct mailbox *mp, struct message *m, long mc, struct cw *cw,
 				stderr);
 		abort();
 	}
-	free(contents);
+	g_free(contents);
 }
 
 static int 
@@ -566,18 +566,18 @@ cache_setptr(int transparent)
 		omessage = message;
 		omsgCount = msgCount;
 	}
-	free(mb.mb_cache_directory);
+	g_free(mb.mb_cache_directory);
 	mb.mb_cache_directory = NULL;
 	if ((name = encname(&mb, "", 1, NULL)) == NULL)
 		return STOP;
-	mb.mb_cache_directory = sstrdup(name);
+	mb.mb_cache_directory = g_strdup(name);
 	if (cwget(&cw) == STOP)
 		return STOP;
 	if (chdir(name) < 0)
 		return STOP;
 	contents = builds(&contentelem);
 	msgCount = contentelem;
-	message = scalloc(msgCount + 1, sizeof *message);
+	message = g_malloc0_n(msgCount + 1, sizeof *message);
 	if (cwret(&cw) == STOP) {
 		fputs("Fatal: Cannot change back to current directory.\n",
 				stderr);
@@ -645,12 +645,12 @@ cache_remove(const char *name)
 	if ((dir = encname(&mb, "", 0, protfile(name))) == NULL)
 		return OKAY;
 	pathend = strlen(dir);
-	path = smalloc(pathsize = pathend + 30);
+	path = g_malloc(pathsize = pathend + 30);
 	strcpy(path, dir);
 	path[pathend++] = '/';
 	path[pathend] = '\0';
 	if ((dirfd = opendir(path)) == NULL) {
-		free(path);
+		g_free(path);
 		return OKAY;
 	}
 	while ((dp = readdir(dirfd)) != NULL) {
@@ -661,21 +661,21 @@ cache_remove(const char *name)
 			continue;
 		n = strlen(dp->d_name);
 		if (pathend + n + 1 > pathsize)
-			path = srealloc(path, pathsize = pathend + n + 30);
+			path = g_realloc(path, pathsize = pathend + n + 30);
 		strcpy(&path[pathend], dp->d_name);
 		if (stat(path, &st) < 0 || (st.st_mode&S_IFMT) != S_IFREG)
 			continue;
 		if (unlink(path) < 0) {
 			perror(path);
 			closedir(dirfd);
-			free(path);
+			g_free(path);
 			return STOP;
 		}
 	}
 	closedir(dirfd);
 	path[pathend] = '\0';
 	rmdir(path);	/* no error on failure, might contain submailboxes */
-	free(path);
+	g_free(path);
 	return OKAY;
 }
 

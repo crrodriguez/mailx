@@ -128,7 +128,7 @@ maildir_setfile(const char *name, int newmail, int isedit)
 		i = maildir_setfile1(name, newmail, omsgCount);
 	}
 	if (newmail)
-		free(mdtable);
+		g_free(mdtable);
 	safe_signal(SIGINT, saveint);
 	if (i < 0) {
 		mb.mb_type = MB_VOID;
@@ -254,8 +254,8 @@ cleantmp(const char *name)
 		if (dp->d_name[0] == '.')
 			continue;
 		if ((ssz = strlen(dp->d_name)) + 5 > fnsz) {
-			free(fn);
-			fn = smalloc(fnsz = ssz + 40);
+			g_free(fn);
+			fn = g_malloc(fnsz = ssz + 40);
 		}
 		strcpy(fn, "tmp/");
 		strcpy(&fn[4], dp->d_name);
@@ -264,7 +264,7 @@ cleantmp(const char *name)
 		if (st.st_atime + 36*3600 < now)
 			unlink(fn);
 	}
-	free(fn);
+	g_free(fn);
 	closedir(dirfd);
 }
 
@@ -307,14 +307,14 @@ append(const char *name, const char *sub, const char *fn)
 	}
 	if (msgCount + 1 >= msgspace) {
 		const int	chunk = 64;
-		message = srealloc(message,
+		message = g_realloc(message,
 				(msgspace += chunk) * sizeof *message);
 		memset(&message[msgCount], 0, chunk * sizeof *message);
 	}
 	if (fn == NULL || sub == NULL)
 		return;
 	m = &message[msgCount++];
-	m->m_maildir_file = smalloc((sz = strlen(sub)) + strlen(fn) + 2);
+	m->m_maildir_file = g_malloc((sz = strlen(sub)) + strlen(fn) + 2);
 	strcpy(m->m_maildir_file, sub);
 	m->m_maildir_file[sz] = '/';
 	strcpy(&m->m_maildir_file[sz+1], fn);
@@ -340,7 +340,7 @@ readin(const char *name, struct message *m)
 		m->m_flag |= MHIDDEN;
 		return;
 	}
-	buf = smalloc(bufsize = LINESIZE);
+	buf = g_malloc(bufsize = LINESIZE);
 	buflen = 0;
 	count = fsize(fp);
 	fseek(mb.mb_otf, 0L, SEEK_END);
@@ -367,7 +367,7 @@ readin(const char *name, struct message *m)
 	m->m_lines = m->m_xlines = lines;
 	m->m_block = mailx_blockof(offset);
 	m->m_offset = mailx_offsetof(offset);
-	free(buf);
+	g_free(buf);
 	substdate(m);
 }
 
@@ -474,8 +474,8 @@ bypass:	if (readstat != NULL)
 				"Held %d messages in %s\n"), held, mailname);
 	}
 	fflush(stdout);
-free:	for (m = &message[0]; m < &message[msgCount]; m++)
-		free(m->m_maildir_file);
+g_free:	for (m = &message[0]; m < &message[msgCount]; m++)
+		g_free(m->m_maildir_file);
 }
 
 static void 
@@ -517,7 +517,7 @@ mkname(time_t t, enum mflag f, const char *pref)
 			n = size = 0;
 			do {
 				if (n < size + 8)
-					node = srealloc(node, size += 20);
+					node = g_realloc(node, size += 20);
 				switch (*cp) {
 				case '/':
 					node[n++] = '\\', node[n++] = '0',
@@ -587,7 +587,7 @@ maildir_append(const char *name, FILE *fp)
 
 	if (mkmaildir(name) != OKAY)
 		return STOP;
-	buf = smalloc(bufsize = LINESIZE);
+	buf = g_malloc(bufsize = LINESIZE);
 	buflen = 0;
 	count = fsize(fp);
 	offs = ftell(fp);
@@ -644,7 +644,7 @@ maildir_append(const char *name, FILE *fp)
 					}
 		}
 	} while (bp != NULL);
-	free(buf);
+	g_free(buf);
 	return OKAY;
 }
 
@@ -778,7 +778,7 @@ mktable(void)
 	int	i;
 
 	mdprime = nextprime(msgCount);
-	mdtable = scalloc(mdprime, sizeof *mdtable);
+	mdtable = g_malloc0_n(mdprime, sizeof *mdtable);
 	for (i = 0; i < msgCount; i++)
 		mdlook(&message[i].m_maildir_file[4], &message[i]);
 }
@@ -793,7 +793,7 @@ subdir_remove(const char *name, const char *sub)
 
 	namelen = strlen(name);
 	sublen = strlen(sub);
-	path = smalloc(pathsize = namelen + sublen + 30);
+	path = g_malloc(pathsize = namelen + sublen + 30);
 	strcpy(path, name);
 	path[namelen] = '/';
 	strcpy(&path[namelen+1], sub);
@@ -801,7 +801,7 @@ subdir_remove(const char *name, const char *sub)
 	path[pathend = namelen + sublen + 2] = '\0';
 	if ((dirfd = opendir(path)) == NULL) {
 		perror(path);
-		free(path);
+		g_free(path);
 		return STOP;
 	}
 	while ((dp = readdir(dirfd)) != NULL) {
@@ -814,12 +814,12 @@ subdir_remove(const char *name, const char *sub)
 			continue;
 		n = strlen(dp->d_name);
 		if (pathend + n + 1 > pathsize)
-			path = srealloc(path, pathsize = pathend + n + 30);
+			path = g_realloc(path, pathsize = pathend + n + 30);
 		strcpy(&path[pathend], dp->d_name);
 		if (unlink(path) < 0) {
 			perror(path);
 			closedir(dirfd);
-			free(path);
+			g_free(path);
 			return STOP;
 		}
 	}
@@ -827,10 +827,10 @@ subdir_remove(const char *name, const char *sub)
 	path[pathend] = '\0';
 	if (rmdir(path) < 0) {
 		perror(path);
-		free(path);
+		g_free(path);
 		return STOP;
 	}
-	free(path);
+	g_free(path);
 	return OKAY;
 }
 

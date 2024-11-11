@@ -1070,43 +1070,40 @@ load_crls(X509_STORE *store, const char *vfile, const char *vdir)
 
 	if ((crl_file = value(vfile)) != NULL) {
 
-		crl_file = expand(crl_file);
-		if (load_crl1(store, crl_file) != OKAY)
-			return STOP;
-	}
-	if ((crl_dir = value(vdir)) != NULL) {
-		crl_dir = expand(crl_dir);
-		ds = strlen(crl_dir);
-		if ((dirfd = opendir(crl_dir)) == NULL) {
-			perror(crl_dir);
-			return STOP;
-		}
-		fn = smalloc(fs = ds + 20);
-		strcpy(fn, crl_dir);
-		fn[ds] = '/';
-		while ((dp = readdir(dirfd)) != NULL) {
-			if (dp->d_name[0] == '.' &&
-					(dp->d_name[1] == '\0' ||
-					 (dp->d_name[1] == '.' &&
-					  dp->d_name[2] == '\0')))
-				continue;
-			if (dp->d_name[0] == '.')
-				continue;
-			if (ds + (es = strlen(dp->d_name)) + 2 < fs)
-				fn = srealloc(fn, fs = ds + es + 20);
-			strcpy(&fn[ds+1], dp->d_name);
-			if (load_crl1(store, fn) != OKAY) {
-				closedir(dirfd);
-				free(fn);
-				return STOP;
-			}
-		}
-		closedir(dirfd);
-		free(fn);
-	}
-	if (crl_file || crl_dir)
-		X509_STORE_set_flags(store, X509_V_FLAG_CRL_CHECK |
-				X509_V_FLAG_CRL_CHECK_ALL);
+                crl_file = expand(crl_file);
+                if (load_crl1(store, crl_file) != OKAY)
+                        return STOP;
+        }
+        if ((crl_dir = value(vdir)) != NULL) {
+                crl_dir = expand(crl_dir);
+                ds = strlen(crl_dir);
+                if ((dirfd = opendir(crl_dir)) == NULL) {
+                        perror(crl_dir);
+                        return STOP;
+                }
+                fn = g_malloc(fs = ds + 20);
+                strcpy(fn, crl_dir);
+                fn[ds] = '/';
+                while ((dp = readdir(dirfd)) != NULL) {
+                        if (dp->d_name[0] == '.' &&
+                            (dp->d_name[1] == '\0' || (dp->d_name[1] == '.' && dp->d_name[2] == '\0')))
+                                continue;
+                        if (dp->d_name[0] == '.')
+                                continue;
+                        if (ds + (es = strlen(dp->d_name)) + 2 < fs)
+                                fn = g_realloc(fn, fs = ds + es + 20);
+                        strcpy(&fn[ds + 1], dp->d_name);
+                        if (load_crl1(store, fn) != OKAY) {
+                                closedir(dirfd);
+                                g_free(fn);
+                                return STOP;
+                        }
+                }
+                closedir(dirfd);
+                g_free(fn);
+        }
+        if (crl_file || crl_dir)
+                X509_STORE_set_flags(store, X509_V_FLAG_CRL_CHECK | X509_V_FLAG_CRL_CHECK_ALL);
 
 	return OKAY;
 }

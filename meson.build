@@ -4,6 +4,8 @@ project('mailx', 'c',
 
 openssl_dep = dependency('openssl', version : '>=1.1.1')
 
+glib_dep = dependency('glib-2.0')
+
 # MIT Kerberos 5 GSSAPI support, does not currently work
 gss_dep = dependency('mit-krb5-gssapi', required : false)
 
@@ -49,4 +51,6 @@ executable('mailx',
            'strings.c',
            'tty.c',
            'vars.c',
-           install : true, dependencies: [openssl_dep, gss_dep])
+           install : true, dependencies: [openssl_dep, gss_dep, glib_dep], gnu_symbol_visibility: 'hidden')
+
+install_man('mailx.1')

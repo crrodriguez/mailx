@@ -69,7 +69,7 @@ Ftemp(char **fn, char *prefix, char *mode, int bits, int register_file)
 	FILE *fp;
 	int fd;
 
-	*fn = smalloc(strlen(tmpdir) + strlen(prefix) + 8);
+	*fn = g_malloc(strlen(tmpdir) + strlen(prefix) + 8);
 	strcpy(*fn, tmpdir);
 	strcat(*fn, "/");
 	strcat(*fn, prefix);
@@ -110,16 +110,16 @@ Ftfree(char **fn)
 	char *cp = *fn;
 
 	*fn = NULL;
-	free(cp);
+	g_free(cp);
 }
 
-void 
+void
 tinit(void)
 {
 	char *cp;
 
 	if ((cp = getenv("TMPDIR")) != NULL) {
-		tmpdir = smalloc(strlen(cp) + 1);
+		tmpdir = g_malloc(strlen(cp) + 1);
 		strcpy(tmpdir, cp);
 	} else {
 		tmpdir = PATH_TMP;
@@ -137,13 +137,13 @@ tinit(void)
 			if (rcvmode)
 				exit(1);
 		} else {
-			myname = smalloc(strlen(cp) + 1);
+			myname = g_malloc(strlen(cp) + 1);
 			strcpy(myname, cp);
 		}
 	}
 	if ((cp = getenv("HOME")) == NULL)
 		cp = ".";
-	homedir = smalloc(strlen(cp) + 1);
+	homedir = g_malloc(strlen(cp) + 1);
 	strcpy(homedir, cp);
 	if (debug || value("debug"))
 		printf(catgets(catd, CATSET, 199,
