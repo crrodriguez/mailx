@@ -121,23 +121,6 @@ savecat(const char *s1, const char *s2)
 
 #include <stdarg.h>
 
-#ifndef	HAVE_SNPRINTF
-/*
- * Lazy vsprintf wrapper.
- */
-int
-snprintf(char *str, size_t size, const char *format, ...)
-{
-	va_list ap;
-	int ret;
-
-	va_start(ap, format);
-	ret = vsprintf(str, format, ap);
-	va_end(ap);
-	return ret;
-}
-#endif	/* !HAVE_SNPRINTF */
-
 /*
  * Announce a fatal error and die.
  */

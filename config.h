@@ -13,8 +13,6 @@
 #define HAVE_ALLOCA
 /* checked for ssize_t */
 #define HAVE_SSIZE_T
-/* checked for snprintf() */
-#define HAVE_SNPRINTF
 /* checked for fchdir() */
 #define HAVE_FCHDIR
 /* checked for mmap() */
