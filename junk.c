@@ -184,17 +184,17 @@ struct lexstat {
 };
 
 #define	constituent(c, b, i, price, hadamp) \
-	((c) & 0200 || alnumchar(c) || (c) == '\'' || (c) == '"' || \
+	((c) & 0200 || g_ascii_isalnum(c) || (c) == '\'' || (c) == '"' || \
 		(c) == '$' || (c) == '!' || (c) == '_' || \
 		(c) == '#' || (c) == '%' || (c) == '&' || \
 		((c) == ';' && hadamp) || \
 		((c) == '-' && !(price)) || \
 		(((c) == '.' || (c) == ',' || (c) == '/') && \
-		 (i) > 0 && digitchar((b)[(i)-1]&0377)))
+		 (i) > 0 && g_ascii_isdigit((b)[(i)-1]&0377)))
 
 #define	url_xchar(c) \
 	(((c)&0200) == 0 && ((c)&037) != (c) && (c) != 0177 && \
-	 !spacechar(c) && (c) != '{' && (c) != '}' && (c) != '|' && \
+	 !g_ascii_isspace(c) && (c) != '{' && (c) != '}' && (c) != '|' && \
 	 (c) != '\\' && (c) != '^' && (c) != '~' && (c) != '[' && \
 	 (c) != ']' && (c) != '`' && (c) != '<' && (c) != '>' && \
 	 (c) != '#' && (c) != '"')
@@ -621,7 +621,7 @@ loop:	*stop = 0;
 			continue;
 		}
 		if (sp->html == HTML_TAG) {
-			if (spacechar(c)) {
+			if (g_ascii_isspace(c)) {
 				*sp->tagp = '\0';
 				if (!asccasecmp(sp->tag, "a") ||
 						!asccasecmp(sp->tag, "img") ||
@@ -652,14 +652,14 @@ loop:	*stop = 0;
 		if (c == '$' && i == 0)
 			sp->price = 1;
 		if (sp->loc == HEADER && sp->lastc == '\n') {
-			if (!spacechar(c)) {
+			if (!g_ascii_isspace(c)) {
 				k = 0;
 				while (k < sizeof sp->field - 3) {
 					sp->field[k++] = c;
 					if (*count <= 0 ||
 							(c = getc(fp)) == EOF)
 						break;
-					if (spacechar(c) || c == ':') {
+					if (g_ascii_isspace(c) || c == ':') {
 						ungetc(c, fp);
 						break;
 					}
@@ -687,7 +687,7 @@ loop:	*stop = 0;
 				for (cq = &(*buf)[j]; *cq != ':'; cq++);
 				cq += 3;	/* skip "://" */
 				while (cq < &(*buf)[i+j] &&
-						(alnumchar(*cq&0377) ||
+						(g_ascii_isalnum(*cq&0377) ||
 						 *cq == '.' || *cq == '-'))
 					*cp++ = *cq++;
 				*cp = '\0';
@@ -722,7 +722,7 @@ loop:	*stop = 0;
 			j = i;
 			i = 0;
 			do {
-				if (alnumchar(*cp&0377)) {
+				if (g_ascii_isalnum(*cp&0377)) {
 					SAVE(*cp&0377)
 				} else
 					i = 0;
@@ -731,7 +731,7 @@ loop:	*stop = 0;
 				SAVE(*cq&0377)
 			}
 		} else if (i > 1 && ((*buf)[i+j-1] == ',' ||
-				 (*buf)[i+j-1] == '.') && !digitchar(c)) {
+				 (*buf)[i+j-1] == '.') && !g_ascii_isdigit(c)) {
 			i--;
 			ungetc(c, fp);
 			(*count)++;
@@ -746,9 +746,9 @@ out:	if (i > 0) {
 		SAVE('\0')
 		c = 0;
 		for (k = 0; k < i; k++)
-			if (digitchar((*buf)[k+j]&0377))
+			if (g_ascii_isdigit((*buf)[k+j]&0377))
 				c++;
-			else if (!alphachar((*buf)[k+j]&0377) &&
+			else if (!g_ascii_isalpha((*buf)[k+j]&0377) &&
 					(*buf)[k+j] != '$') {
 				c = 0;
 				break;

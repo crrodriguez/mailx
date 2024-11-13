@@ -442,7 +442,7 @@ hprf(const char *fmt, int mesg, FILE *f, int threaded, const char *attrlist)
 				fp++;
 			} else if (*fp == '+')
 				fp++;
-			while (digitchar(*fp&0377))
+			while (g_ascii_isdigit(*fp&0377))
 				fp++;
 			if (*fp == '\0')
 				break;
@@ -476,10 +476,10 @@ hprf(const char *fmt, int mesg, FILE *f, int threaded, const char *attrlist)
 				fp++;
 			} else if (*fp == '+')
 				fp++;
-			if (digitchar(*fp&0377)) {
+			if (g_ascii_isdigit(*fp&0377)) {
 				do
 					n = 10*n + *fp - '0';
-				while (fp++, digitchar(*fp&0377));
+				while (fp++, g_ascii_isdigit(*fp&0377));
 			}
 			if (*fp == '\0')
 				break;

@@ -807,13 +807,13 @@ imap_capability(struct mailbox *mp)
 				response_other == CAPABILITY_DATA) {
 			cp = responded_other_text;
 			while (*cp) {
-				while (spacechar(*cp&0377))
+				while (g_ascii_isspace(*cp&0377))
 					cp++;
 				if (strncmp(cp, "UIDPLUS", 7) == 0 &&
-						spacechar(cp[7]&0377))
+						g_ascii_isspace(cp[7]&0377))
 					/* RFC 2359 */
 					mp->mb_flags |= MB_UIDPLUS;
-				while (*cp && !spacechar(*cp&0377))
+				while (*cp && !g_ascii_isspace(*cp&0377))
 					cp++;
 			}
 		}

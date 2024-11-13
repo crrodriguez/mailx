@@ -209,7 +209,7 @@ i_strcpy(char *dest, const char *src, int size)
 
 	max=dest+size-1;
 	while (dest<=max) {
-		*dest++ = lowerconv(*src & 0377);
+		*dest++ = g_ascii_tolower(*src & 0377);
 		if (*src++ == '\0')
 			break;
 	}
@@ -338,7 +338,7 @@ colalign(const char *cp, int col, int fill)
 		if (n > col)
 			break;
 		col -= n;
-		if (sz == 1 && spacechar(*cp&0377)) {
+		if (sz == 1 && g_ascii_isspace(*cp&0377)) {
 			*np++ = ' ';
 			cp++;
 		} else
@@ -533,7 +533,7 @@ which_protocol(const char *name)
 	if (name[0] == '%' && name[1] == ':')
 		name += 2;
 	for (cp = name; *cp && *cp != ':'; cp++)
-		if (!alnumchar(*cp&0377))
+		if (!g_ascii_isalnum(*cp&0377))
 			goto file;
 	if (cp[0] == ':' && cp[1] == '/' && cp[2] == '/') {
 		if (strncmp(name, "pop3://", 7) == 0)
@@ -700,7 +700,7 @@ strenc(const char *cp)
 
 	np = n = salloc(strlen(cp) * 3 + 1);
 	while (*cp) {
-		if (alnumchar(*cp&0377) || *cp == '_' || *cp == '@' ||
+		if (g_ascii_isalnum(*cp&0377) || *cp == '_' || *cp == '@' ||
 				(np > n && (*cp == '.' || *cp == '-' ||
 					    *cp == ':')))
 			*np++ = *cp;
@@ -1084,28 +1084,13 @@ putuc(int u, int c, FILE *fp)
 int 
 asccasecmp(const char *s1, const char *s2)
 {
-	register int cmp;
-
-	do
-		if ((cmp = lowerconv(*s1 & 0377) - lowerconv(*s2 & 0377)) != 0)
-			return cmp;
-	while (*s1++ != '\0' && *s2++ != '\0');
-	return 0;
+        return g_ascii_strcasecmp (s1, s2);
 }
 
 int
 ascncasecmp(const char *s1, const char *s2, size_t sz)
 {
-	register int cmp;
-	size_t i = 1;
-
-	if (sz == 0)
-		return 0;
-	do
-		if ((cmp = lowerconv(*s1 & 0377) - lowerconv(*s2 & 0377)) != 0)
-			return cmp;
-	while (i++ < sz && *s1++ != '\0' && *s2++ != '\0');
-	return 0;
+        return g_ascii_strncasecmp (s1, s2, sz);
 }
 
 char *
@@ -1120,8 +1105,8 @@ asccasestr(const char *haystack, const char *xneedle)
 	needle = ac_alloc(sz);
 	NEEDLE = ac_alloc(sz);
 	for (i = 0; i < sz; i++) {
-		needle[i] = lowerconv(xneedle[i]&0377);
-		NEEDLE[i] = upperconv(xneedle[i]&0377);
+		needle[i] = g_ascii_tolower(xneedle[i]&0377);
+		NEEDLE[i] = g_ascii_toupper(xneedle[i]&0377);
 	}
 	while (*haystack) {
 		if (*haystack == *needle || *haystack == *NEEDLE) {

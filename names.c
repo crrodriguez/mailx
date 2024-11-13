@@ -434,8 +434,8 @@ same_name(char *n1, char *n2)
 		do {
 			c1 = (*n1++ & 0377);
 			c2 = (*n2++ & 0377);
-			c1 = lowerconv(c1);
-			c2 = lowerconv(c2);
+			c1 = g_ascii_tolower(c1);
+			c2 = g_ascii_tolower(c2);
 			if (c1 != c2)
 				return 0;
 		} while (c1 != '\0' && c2 != '\0' && c1 != '@' && c2 != '@');

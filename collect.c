@@ -1117,8 +1117,8 @@ forward(char *ms, FILE *fp, int f)
 		tabst = NULL;
 	else if ((tabst = value("indentprefix")) == NULL)
 		tabst = "\t";
-	ig = upperchar(f) ? (struct ignoretab *)NULL : ignore;
-	action = upperchar(f) ? SEND_QUOTE_ALL : SEND_QUOTE;
+	ig = g_ascii_isupper(f) ? (struct ignoretab *)NULL : ignore;
+	action = g_ascii_isupper(f) ? SEND_QUOTE_ALL : SEND_QUOTE;
 	printf(catgets(catd, CATSET, 69, "Interpolating:"));
 	for (; *msgvec != 0; msgvec++) {
 		struct message *mp = message + *msgvec - 1;

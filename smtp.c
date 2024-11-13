@@ -337,7 +337,7 @@ talk_smtp(struct name *to, FILE *fi, struct sock *sp,
 		case AUTH_CRAM_MD5:
 			SMTP_OUT("AUTH CRAM-MD5\r\n");
 			SMTP_ANSWER(3);
-			for (cp = smtpbuf; digitchar(*cp&0377); cp++);
+			for (cp = smtpbuf; g_ascii_isdigit(*cp&0377); cp++);
 			while (blankchar(*cp&0377)) cp++;
 			cp = cram_md5_string(user, password, cp);
 			SMTP_OUT(cp);

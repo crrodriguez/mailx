@@ -112,7 +112,7 @@ mhash(const char *cp, int mprime)
 			continue;
 		if (*cp == '@')
 			at++;
-		h = ((h << 4) & 0xffffffff) + lowerconv(*cp & 0377);
+		h = ((h << 4) & 0xffffffff) + g_ascii_tolower(*cp & 0377);
 		if ((g = h & 0xf0000000) != 0) {
 			h = h ^ (g >> 24);
 			h = h ^ g;

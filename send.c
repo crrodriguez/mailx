@@ -279,9 +279,9 @@ sendpart(struct message *zmp, struct mimepart *ip, FILE *obuf,
 			 * Pick up the header field if we have one.
 			 */
 			for (cp = line; (c = *cp&0377) && c != ':' &&
-					!spacechar(c); cp++);
+					!g_ascii_isspace(c); cp++);
 			cp2 = cp;
-			while (spacechar(*cp&0377))
+			while (g_ascii_isspace(*cp&0377))
 				cp++;
 			if (cp[0] != ':' && level == 0 && lineno == 1) {
 				/*
@@ -1063,7 +1063,7 @@ getpipecmd(char *content)
 	cp = &penv[5];
 	cq = content;
 	do
-		*cp++ = lowerconv(*cq & 0377);
+		*cp++ = g_ascii_tolower(*cq & 0377);
 	while (*cq++);
 	pipecmd = value(penv);
 	ac_free(penv);

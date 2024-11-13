@@ -145,7 +145,7 @@ delctrl(char *cp, size_t sz)
 	size_t	x = 0, y = 0;
 
 	while (x < sz) {
-		if (!cntrlchar(cp[x]&0377))
+		if (!g_ascii_iscntrl(cp[x]&0377))
 			cp[y++] = cp[x];
 		x++;
 	}
@@ -271,7 +271,7 @@ getcharset(int isclean)
 
 				ptr = charset = g_strdup(t);
 				while ((c = *ptr)) {
-					*ptr = lowerconv(c & 0377);
+					*ptr = g_ascii_tolower(c & 0377);
 					ptr++;
 				}
 			}
@@ -560,7 +560,7 @@ is_this_enc(const char *line, const char *encoding)
 	if (*line == '"')
 		quoted = 1, line++;
 	while (*line && *encoding)
-		if (c = *line++, lowerconv(c) != *encoding++)
+		if (c = *line++, g_ascii_tolower(c) != *encoding++)
 			return 0;
 	if (quoted && *line == '"')
 		return 1;
@@ -714,7 +714,7 @@ mime_tline(char *x, char *l)
 	char *type, *n;
 	int match = 0;
 
-	if ((*l & 0200) || alphachar(*l & 0377) == 0)
+	if ((*l & 0200) || g_ascii_isalpha(*l & 0377) == 0)
 		return NULL;
 	type = l;
 	while (blankchar(*l & 0377) == 0 && *l != '\0')

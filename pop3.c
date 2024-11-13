@@ -285,7 +285,7 @@ pop3_find_timestamp(const char *bp)
 	if ((cp = strchr(bp, '<')) == NULL)
 		return NULL;
 	for (ep = cp; *ep; ep++) {
-		if (spacechar(*ep&0377))
+		if (g_ascii_isspace(*ep&0377))
 			return NULL;
 		else if (*ep == '@')
 			hadat = 1;
@@ -426,14 +426,14 @@ pop3_stat(struct mailbox *mp, off_t *size, int *count)
 
 	POP3_OUT("STAT\r\n", MB_COMD);
 	POP3_ANSWER()
-	for (cp = pop3buf; *cp && !spacechar(*cp & 0377); cp++);
-	while (*cp && spacechar(*cp & 0377))
+	for (cp = pop3buf; *cp && !g_ascii_isspace(*cp & 0377); cp++);
+	while (*cp && g_ascii_isspace(*cp & 0377))
 		cp++;
 	if (*cp) {
 		*count = (int)strtol(cp, NULL, 10);
-		while (*cp && !spacechar(*cp & 0377))
+		while (*cp && !g_ascii_isspace(*cp & 0377))
 			cp++;
-		while (*cp && spacechar(*cp & 0377))
+		while (*cp && g_ascii_isspace(*cp & 0377))
 			cp++;
 		if (*cp)
 			*size = (int)strtol(cp, NULL, 10);
@@ -455,12 +455,12 @@ pop3_list(struct mailbox *mp, int n, size_t *size)
 	snprintf(o, sizeof o, "LIST %u\r\n", n);
 	POP3_OUT(o, MB_COMD)
 	POP3_ANSWER()
-	for (cp = pop3buf; *cp && !spacechar(*cp & 0377); cp++);
-	while (*cp && spacechar(*cp & 0377))
+	for (cp = pop3buf; *cp && !g_ascii_isspace(*cp & 0377); cp++);
+	while (*cp && g_ascii_isspace(*cp & 0377))
 		cp++;
-	while (*cp && !spacechar(*cp & 0377))
+	while (*cp && !g_ascii_isspace(*cp & 0377))
 		cp++;
-	while (*cp && spacechar(*cp & 0377))
+	while (*cp && g_ascii_isspace(*cp & 0377))
 		cp++;
 	if (*cp)
 		*size = (size_t)strtol(cp, NULL, 10);

@@ -267,14 +267,14 @@ maexec(struct macro *mp)
 	return r;
 }
 
-static int 
+static int
 closingangle(const char *cp)
 {
-	while (spacechar(*cp&0377))
+	while (g_ascii_isspace(*cp&0377))
 		cp++;
 	if (*cp++ != '}')
 		return 0;
-	while (spacechar(*cp&0377))
+	while (g_ascii_isspace(*cp&0377))
 		cp++;
 	return *cp == '\0';
 }

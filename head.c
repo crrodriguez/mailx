@@ -208,11 +208,11 @@ cmatch(char *cp, char *tp)
 	while (*cp && *tp)
 		switch (*tp++) {
 		case 'a':
-			if (c = *cp++, !lowerchar(c))
+			if (c = *cp++, !g_ascii_islower(c))
 				return 0;
 			break;
 		case 'A':
-			if (c = *cp++, !upperchar(c))
+			if (c = *cp++, !g_ascii_isupper(c))
 				return 0;
 			break;
 		case ' ':
@@ -493,7 +493,7 @@ gethfield(FILE *f, char **linebuf, size_t *linesize, int rem, char **colon)
 char *
 thisfield(const char *linebuf, const char *field)
 {
-	while (lowerconv(*linebuf&0377) == lowerconv(*field&0377)) {
+	while (g_ascii_tolower(*linebuf&0377) == g_ascii_tolower(*field&0377)) {
 		linebuf++;
 		field++;
 	}
@@ -941,7 +941,7 @@ msgidnextc(const char **cp, int *status)
 		default:
 		dfl:
 			c = *(*cp)++ & 0377;
-			return *status & 02 ? lowerconv(c) : c;
+			return *status & 02 ? g_ascii_tolower(c) : c;
 		}
 	}
 }
@@ -1137,8 +1137,8 @@ rfctime(char *date)
 
 	if ((cp = nexttoken(cp)) == NULL)
 		goto invalid;
-	if (alphachar(cp[0] & 0377) && alphachar(cp[1] & 0377) &&
-				alphachar(cp[2] & 0377) && cp[3] == ',') {
+	if (g_ascii_isalpha(cp[0] & 0377) && g_ascii_isalpha(cp[1] & 0377) &&
+				g_ascii_isalpha(cp[2] & 0377) && cp[3] == ',') {
 		if ((cp = nexttoken(&cp[4])) == NULL)
 			goto invalid;
 	}
@@ -1181,9 +1181,9 @@ rfctime(char *date)
 		case '+':
 			cp++;
 		}
-		if (digitchar(cp[0] & 0377) && digitchar(cp[1] & 0377) &&
-				digitchar(cp[2] & 0377) &&
-				digitchar(cp[3] & 0377)) {
+		if (g_ascii_isdigit(cp[0] & 0377) && g_ascii_isdigit(cp[1] & 0377) &&
+				g_ascii_isdigit(cp[2] & 0377) &&
+				g_ascii_isdigit(cp[3] & 0377)) {
 			buf[2] = '\0';
 			buf[0] = cp[0];
 			buf[1] = cp[1];
@@ -1257,7 +1257,7 @@ substdate(struct message *m)
 		while ((cp = nexttoken(cp)) != NULL && *cp != ';') {
 			do
 				cp++;
-			while (alnumchar(*cp & 0377));
+			while (g_ascii_isalnum(*cp & 0377));
 		}
 		if (cp && *++cp)
 			m->m_time = rfctime(cp);

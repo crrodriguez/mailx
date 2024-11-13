@@ -295,12 +295,12 @@ itparse(const char *spec, char **xp, int sub)
 	return ok;
 }
 
-static enum okay 
+static enum okay
 itscan(const char *spec, char **xp)
 {
 	int	i, n;
 
-	while (spacechar(*spec&0377))
+	while (g_ascii_isspace(*spec&0377))
 		spec++;
 	if (*spec == '(') {
 		*xp = (char *)&spec[1];
@@ -312,7 +312,7 @@ itscan(const char *spec, char **xp)
 		itoken = ITEOL;
 		return OKAY;
 	}
-	while (spacechar(*spec&0377))
+	while (g_ascii_isspace(*spec&0377))
 		spec++;
 	if (*spec == '\0') {
 		itoken = ITEOD;
@@ -321,25 +321,25 @@ itscan(const char *spec, char **xp)
 	for (i = 0; strings[i].s_string; i++) {
 		n = strlen(strings[i].s_string);
 		if (ascncasecmp(spec, strings[i].s_string, n) == 0 &&
-				(spacechar(spec[n]&0377) || spec[n] == '\0'
+				(g_ascii_isspace(spec[n]&0377) || spec[n] == '\0'
 				 || spec[n] == '(' || spec[n] == ')')) {
 			itoken = strings[i].s_token;
 			spec += n;
-			while (spacechar(*spec&0377))
+			while (g_ascii_isspace(*spec&0377))
 				spec++;
 			return itsplit(spec, xp);
 		}
 	}
-	if (digitchar(*spec&0377)) {
+	if (g_ascii_isdigit(*spec&0377)) {
 		inumber = strtoul(spec, xp, 10);
-		if (spacechar(**xp&0377) || **xp == '\0' ||
+		if (g_ascii_isspace(**xp&0377) || **xp == '\0' ||
 				**xp == '(' || **xp == ')') {
 			itoken = ITSET;
 			return OKAY;
 		}
 	}
 	fprintf(stderr, "Bad SEARCH criterion \"");
-	while (*spec && !spacechar(*spec&0377) &&
+	while (*spec && !g_ascii_isspace(*spec&0377) &&
 			*spec != '(' && *spec != ')') {
 		putc(*spec&0377, stderr);
 		spec++;
@@ -417,7 +417,7 @@ itsplit(const char *spec, char **xp)
 		if (itstring(&iargs[0], spec, xp) != OKAY)
 			return STOP;
 		inumber = strtoul(iargs[0], &cp, 10);
-		if (spacechar(*cp&0377) || *cp == '\0')
+		if (g_ascii_isspace(*cp&0377) || *cp == '\0')
 			return OKAY;
 		fprintf(stderr, "Invalid size: >>> %s <<<\n",
 				around(*xp));
@@ -434,13 +434,13 @@ itsplit(const char *spec, char **xp)
 	}
 }
 
-static enum okay 
+static enum okay
 itstring(void **tp, const char *spec, char **xp)
 {
 	int	inquote = 0;
 	char	*ap;
 
-	while (spacechar(*spec&0377))
+	while (g_ascii_isspace(*spec&0377))
 		spec++;
 	if (*spec == '\0' || *spec == '(' || *spec == ')') {
 		fprintf(stderr, "Missing string argument: >>> %s <<<\n",
@@ -454,7 +454,7 @@ itstring(void **tp, const char *spec, char **xp)
 			*ap++ = *(*xp)++;
 		else if (**xp == '"')
 			inquote = !inquote;
-		else if (!inquote && (spacechar(**xp&0377) ||
+		else if (!inquote && (g_ascii_isspace(**xp&0377) ||
 				**xp == '(' || **xp == ')')) {
 			*ap++ = '\0';
 			break;

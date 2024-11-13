@@ -70,7 +70,7 @@ canonify(const char *vn)
 {
 	const char	*vp;
 
-	if (upperchar(*vn&0377))
+	if (g_ascii_isupper(*vn&0377))
 		return (char *)vn;
 	for (vp = vn; *vp && *vp != '@'; vp++);
 	if (*vp == '@')

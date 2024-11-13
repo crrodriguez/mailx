@@ -149,7 +149,7 @@ imap_gss(struct mailbox *mp, char *user)
 	if ((cp = last_at_before_slash(server)) != NULL)
 		server = &cp[1];
 	for (cp = server; *cp; cp++)
-		*cp = lowerconv(*cp&0377);
+		*cp = g_ascii_tolower(*cp&0377);
 	send_tok.value = salloc(send_tok.length = strlen(server) + 6);
 	snprintf(send_tok.value, send_tok.length, "imap@%s", server);
 	maj_stat = gss_import_name(&min_stat, &send_tok,

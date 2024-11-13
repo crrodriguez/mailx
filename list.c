@@ -776,7 +776,7 @@ scan(char **sp)
 	 */
 	if (c == '&') {
 		threadflag = 1;
-		if (*cp == '\0' || spacechar(*cp&0377)) {
+		if (*cp == '\0' || g_ascii_isspace(*cp&0377)) {
 			lexstring[0] = '.';
 			lexstring[1] = '\0';
 			*sp = cp;
@@ -791,9 +791,9 @@ scan(char **sp)
 	 * Return TNUMBER when done.
 	 */
 
-	if (digitchar(c)) {
+	if (g_ascii_isdigit(c)) {
 		lexnumber = 0;
-		while (digitchar(c)) {
+		while (g_ascii_isdigit(c)) {
 			lexnumber = lexnumber*10 + c - '0';
 			*cp2++ = c;
 			c = *cp++;
@@ -833,7 +833,7 @@ scan(char **sp)
 				level++;
 			else if (c == ')')
 				level--;
-			else if (spacechar(c)) {
+			else if (g_ascii_isspace(c)) {
 				/*
 				 * Replace unquoted whitespace by single
 				 * space characters, to make the string

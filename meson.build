@@ -11,7 +11,6 @@ gss_dep = dependency('mit-krb5-gssapi', required : false)
 
 executable('mailx',
            'cache.c',
-           'getopt.c',
            'imap_search.c',
            'lzw.c',
            'maildir.c',

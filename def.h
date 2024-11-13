@@ -560,21 +560,10 @@ enum {
 extern const unsigned char	class_char[];
 
 #define	asciichar(c) ((unsigned)(c) <= 0177)
-#define	alnumchar(c) (asciichar(c)&&(class_char[c]&\
-			(C_DIGIT|C_OCTAL|C_UPPER|C_LOWER)))
-#define	alphachar(c) (asciichar(c)&&(class_char[c]&(C_UPPER|C_LOWER)))
 #define	blankchar(c) (asciichar(c)&&(class_char[c]&(C_BLANK)))
-#define	cntrlchar(c) (asciichar(c)&&(class_char[c]==C_CNTRL))
-#define	digitchar(c) (asciichar(c)&&(class_char[c]&(C_DIGIT|C_OCTAL)))
-#define	lowerchar(c) (asciichar(c)&&(class_char[c]&(C_LOWER)))
-#define	punctchar(c) (asciichar(c)&&(class_char[c]&(C_PUNCT)))
-#define	spacechar(c) (asciichar(c)&&(class_char[c]&(C_BLANK|C_SPACE|C_WHITE)))
-#define	upperchar(c) (asciichar(c)&&(class_char[c]&(C_UPPER)))
 #define	whitechar(c) (asciichar(c)&&(class_char[c]&(C_BLANK|C_WHITE)))
 #define	octalchar(c) (asciichar(c)&&(class_char[c]&(C_OCTAL)))
 
-#define	upperconv(c) (lowerchar(c) ? (c)-'a'+'A' : (c))
-#define	lowerconv(c) (upperchar(c) ? (c)-'A'+'a' : (c))
 /*	RFC 822, 3.2.	*/
 #define	fieldnamechar(c) (asciichar(c)&&(c)>040&&(c)!=0177&&(c)!=':')
 

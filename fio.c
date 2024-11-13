@@ -162,7 +162,7 @@ setptr(FILE *ibuf, off_t offset)
 							this.m_flag &= ~MNEW;
 					break;
 				}
-				if (*cp != c && *cp != upperconv(c))
+				if (*cp != c && *cp != g_ascii_toupper(c))
 					break;
 			}
 			for (cp = linebuf, cp2 = "x-status";; cp++) {
@@ -179,7 +179,7 @@ setptr(FILE *ibuf, off_t offset)
 							this.m_flag|=MDRAFTED;
 					break;
 				}
-				if (*cp != c && *cp != upperconv(c))
+				if (*cp != c && *cp != g_ascii_toupper(c))
 					break;
 			}
 		}
