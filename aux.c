@@ -901,8 +901,7 @@ makedir(const char *name)
 	return OKAY;
 }
 
-#ifdef	HAVE_FCHDIR
-enum okay 
+enum okay
 cwget(struct cw *cw)
 {
 	if ((cw->cw_fd = open(".", O_RDONLY)) < 0)
@@ -922,34 +921,11 @@ cwret(struct cw *cw)
 	return OKAY;
 }
 
-void 
+void
 cwrelse(struct cw *cw)
 {
 	close(cw->cw_fd);
 }
-#else	/* !HAVE_FCHDIR */
-enum okay 
-cwget(struct cw *cw)
-{
-	if (getcwd(cw->cw_wd, sizeof cw->cw_wd) == NULL || chdir(cw->cw_wd) < 0)
-		return STOP;
-	return OKAY;
-}
-
-enum okay 
-cwret(struct cw *cw)
-{
-	if (chdir(cw->cw_wd) < 0)
-		return STOP;
-	return OKAY;
-}
-
-/*ARGSUSED*/
-void 
-cwrelse(struct cw *cw)
-{
-}
-#endif	/* !HAVE_FCHDIR */
 
 void
 makeprint(struct str *in, struct str *out)
